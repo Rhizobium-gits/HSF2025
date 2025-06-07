@@ -142,9 +142,10 @@ async def auth(request: Request):
         # Fallback in case id_token is missing
         resp = await oauth.google.get('userinfo', token=token)
         user = resp.json()
-    request.session['user'] = {'id': user['sub'], 'name': user['name']}
-    if user['sub'] not in user_profiles:
-        user_profiles[user['sub']] = Profile()
+
+    request.session['user'] = {'id': user['id'], 'name': user['name']}
+    if user['id'] not in user_profiles:
+        user_profiles[user['id']] = Profile()
     return RedirectResponse('/timeline')
 
 
