@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form, UploadFile, File, Depends
+from fastapi import FastAPI, Request, Form, UploadFile, File
 import os
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict
 import uuid
 import shutil
+import json
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", "change-me"))
@@ -30,12 +31,32 @@ oauth.register(
 class Post(BaseModel):
     id: str
     author: str
+    author_id: str
     text: str
     image_url: Optional[str] = None
     likes: int = 0
     liked_by: List[str] = []
 
 posts: List[Post] = []
+
+POSTS_FILE = "posts.json"
+
+
+def load_posts():
+    if os.path.exists(POSTS_FILE):
+        with open(POSTS_FILE, "r") as f:
+            data = json.load(f)
+        posts.clear()
+        for item in data:
+            posts.append(Post(**item))
+
+
+def save_posts():
+    with open(POSTS_FILE, "w") as f:
+        json.dump([p.dict() for p in posts], f, ensure_ascii=False, indent=2)
+
+
+load_posts()
 
 
 class Profile(BaseModel):
@@ -71,6 +92,8 @@ async def timeline(request: Request):
             'request': request,
             'user': user,
             'posts': posts,
+            'profiles': user_profiles,
+            'emojis': BUILDING_EMOJI,
             'active': 'timeline',
         },
     )
@@ -168,8 +191,28 @@ async def create_post(request: Request, text: str = Form(...), image: UploadFile
             shutil.copyfileobj(image.file, buffer)
         image_url = "/" + filename
 
-    post = Post(id=uuid.uuid4().hex, author=user['name'], text=text, image_url=image_url)
+    post = Post(
+        id=uuid.uuid4().hex,
+        author=user['name'],
+        author_id=user['id'],
+        text=text,
+        image_url=image_url,
+    )
     posts.append(post)
+    save_posts()
+    return RedirectResponse('/timeline', status_code=303)
+
+
+@app.post('/posts/{post_id}/delete')
+async def delete_post(request: Request, post_id: str):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse('/login')
+    for i, p in enumerate(posts):
+        if p.id == post_id and p.author_id == user['id']:
+            posts.pop(i)
+            save_posts()
+            break
     return RedirectResponse('/timeline', status_code=303)
 
 
@@ -187,4 +230,5 @@ async def like_post(request: Request, post_id: str):
                 p.liked_by.append(user['id'])
                 p.likes += 1
             break
+    save_posts()
     return RedirectResponse('/timeline', status_code=303)

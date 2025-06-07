@@ -4,8 +4,11 @@
 <p><a href="/login">Login with Google</a></p>
 {% else %}
 {% for post in posts %}
-<div class="post">
-    <p><strong>{{ post.author }}</strong></p>
+<div class="post{% if not post.image_url %} no-image{% endif %}">
+    <p><strong>{{ post.author }}</strong>
+    {% set profile = profiles.get(post.author_id) %}
+    {% if profile %}{{ emojis[profile.building] }}{% endif %}
+    </p>
     <p>{{ post.text }}</p>
     {% if post.image_url %}
     <img src="{{ post.image_url }}" alt="image">
@@ -17,6 +20,11 @@
         <button type="submit">Like ({{ post.likes }})</button>
         {% endif %}
     </form>
+    {% if user and post.author_id == user['id'] %}
+    <form action="/posts/{{ post.id }}/delete" method="post" style="display:inline;">
+        <button type="submit">Delete</button>
+    </form>
+    {% endif %}
 </div>
 {% endfor %}
 {% endif %}
