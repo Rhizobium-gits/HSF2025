@@ -6,6 +6,11 @@ body {
     padding: 0;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .container {
     width: 100%;
     max-width: 375px;
@@ -23,6 +28,7 @@ body {
 
 header {
     background-color: #fff;
+    color: #000;
     border-bottom: 1px solid #ddd;
     padding: 10px;
     display: flex;
@@ -42,25 +48,72 @@ form.post-form, form.profile-form {
     gap: 8px;
 }
 
-form.post-form input[type="text"] {
+form.post-form input[type="text"],
+form.profile-form input[type="text"] {
     flex: 1;
-    padding: 8px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 form.post-form input[type="file"] {
     padding: 4px 0;
 }
 
+form.profile-form select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+}
+
 button {
     padding: 8px 12px;
     border: none;
-    background-color: #000;
+    background-color: #6200ee;
     color: white;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #333;
+    background-color: #3700b3;
+}
+
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    color: #6200ee;
+    padding: 4px 8px;
+}
+
+.icon-btn.liked {
+    color: #6200ee;
+}
+
+.icon-btn span {
+    font-size: 20px;
+    font-variation-settings: 'FILL' 0;
+    display: inline-block;
+    padding: 4px;
+    border-radius: 50%;
+    background: #eee;
+}
+
+.icon-btn.liked span {
+    font-variation-settings: 'FILL' 1;
+    background: #6200ee;
+    color: #fff;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 6px;
+    vertical-align: middle;
 }
 
 .post {
@@ -69,12 +122,21 @@ button:hover {
     border-radius: 4px;
     padding: 10px 15px;
     margin-bottom: 15px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.post.no-image {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 18px;
 }
 
 .post img {
     max-width: 100%;
     border-radius: 4px;
     margin-top: 8px;
+    object-fit: cover;
 }
 
 .bottom-nav {
@@ -84,7 +146,7 @@ button:hover {
     transform: translateX(-50%);
     width: 100%;
     max-width: 375px;
-    height: 50px;
+    height: 60px;
     background: #fff;
     border-top: 1px solid #ddd;
     display: flex;
@@ -93,12 +155,49 @@ button:hover {
 .bottom-nav a {
     flex: 1;
     text-align: center;
-    line-height: 50px;
+    line-height: 60px;
     text-decoration: none;
     color: #000;
-    font-size: 14px;
+    font-size: 20px;
 }
 
-.bottom-nav a.active {
-    font-weight: bold;
+.bottom-nav a span {
+    display: inline-block;
+    padding: 6px;
+    border-radius: 50%;
+    background: #eee;
+    transition: background 0.2s, color 0.2s;
+}
+
+.bottom-nav a.active span,
+.bottom-nav a:hover span {
+    background: #6200ee;
+    color: #fff;
+}
+
+a {
+    color: #6200ee;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 16px 24px;
+    border-radius: 8px;
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeInPopup 0.3s forwards;
+}
+
+@keyframes fadeInPopup {
+    from { opacity: 0; transform: translate(-50%, -40%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
 }

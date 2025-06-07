@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 {% if user %}
-<p>住んでいる棟: {{ profile.building }} {{ emojis[profile.building] }}</p>
+<p>住んでいる棟: {{ profile.building }} <span class="material-symbols-rounded">{{ icons[profile.building] }}</span></p>
 <p>{{ profile.comment }}</p>
-<form class="profile-form" action="/profile" method="post">
+<form class="profile-form popup-submit" action="/profile" method="post" data-message="保存中...">
     <label>住んでいる棟
         <select name="building">
             {% for b in buildings %}
-            <option value="{{ b }}" {% if profile.building == b %}selected{% endif %}>{{ b }} {{ emojis[b] }}</option>
+            <option value="{{ b }}" {% if profile.building == b %}selected{% endif %}>{{ b }} <span class="material-symbols-rounded">{{ icons[b] }}</span></option>
             {% endfor %}
         </select>
     </label>
