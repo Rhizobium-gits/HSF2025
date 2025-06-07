@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hvillage夏祭り投稿</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         * {
             margin: 0;
@@ -42,12 +43,75 @@
             color: #1a1a1a;
         }
         
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #8e8e8e;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #00d084;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: 1px solid #e6e6e6;
+            color: #8e8e8e;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .logout-btn:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        
         .status-info {
             display: flex;
             align-items: center;
             gap: 12px;
             font-size: 13px;
             color: #8e8e8e;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00d084;
+        }
+        
+        .status-dot.offline {
+            background: #ff6b6b;
+        }
+        
+        .status-dot.connecting {
+            background: #ffa500;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         .refresh-btn {
@@ -66,10 +130,86 @@
             color: #00d084;
         }
         
+        .refresh-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .container {
             max-width: 680px;
             margin: 0 auto;
             padding: 40px 20px;
+        }
+        
+        /* ログイン画面のスタイル */
+        .login-screen {
+            display: block;
+            text-align: center;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-card {
+            background: #fff;
+            border: 1px solid #e6e6e6;
+            border-radius: 12px;
+            padding: 48px 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .login-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+        
+        .login-subtitle {
+            font-size: 16px;
+            color: #8e8e8e;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        
+        .google-signin-container {
+            margin-bottom: 24px;
+        }
+        
+        .demo-login-section {
+            border-top: 1px solid #e6e6e6;
+            padding-top: 24px;
+            margin-top: 24px;
+        }
+        
+        .demo-login-title {
+            font-size: 14px;
+            color: #8e8e8e;
+            margin-bottom: 16px;
+        }
+        
+        .demo-login-btn {
+            width: 100%;
+            background: none;
+            border: 1px solid #e6e6e6;
+            color: #8e8e8e;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .demo-login-btn:hover {
+            border-color: #00d084;
+            color: #00d084;
+        }
+        
+        .main-content {
+            display: none;
         }
         
         .welcome-section {
@@ -89,6 +229,17 @@
             font-size: 16px;
             color: #8e8e8e;
             margin-bottom: 8px;
+        }
+        
+        .server-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #0066cc;
+            text-align: center;
         }
         
         .tabs {
@@ -177,6 +328,11 @@
         .form-group select:focus {
             outline: none;
             border-color: #00d084;
+        }
+        
+        .form-group input:read-only {
+            background: #f8f9fa;
+            color: #6c757d;
         }
         
         .form-group textarea {
@@ -282,6 +438,32 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         
+        .article.new-post {
+            animation: slideInFromTop 0.5s ease-out;
+            border-color: #00d084;
+        }
+        
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .new-badge {
+            background: #00d084;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
         .article-header {
             padding: 24px 24px 0 24px;
         }
@@ -306,6 +488,13 @@
             font-size: 14px;
         }
         
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
         .author-info {
             flex: 1;
         }
@@ -314,6 +503,8 @@
             font-size: 14px;
             font-weight: 500;
             color: #1a1a1a;
+            display: flex;
+            align-items: center;
         }
         
         .article-date {
@@ -411,6 +602,11 @@
             color: #ff6b6b;
         }
         
+        .like-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .share-btn {
             background: none;
             border: 1px solid #e6e6e6;
@@ -437,6 +633,23 @@
             font-size: 18px;
             margin-bottom: 8px;
             color: #1a1a1a;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8e8e8e;
+            font-size: 14px;
+        }
+        
+        .error-message {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            color: #c53030;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            font-size: 14px;
         }
         
         .modal {
@@ -495,6 +708,10 @@
                 padding: 20px 16px;
             }
             
+            .login-card {
+                padding: 32px 24px;
+            }
+            
             .welcome-section h1 {
                 font-size: 28px;
             }
@@ -524,16 +741,76 @@
             .tab {
                 margin-right: 24px;
             }
+            
+            .header-content {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .user-info {
+                order: 3;
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- ログイン画面 -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <h1 class="login-title">🏮 Hvillage夏祭り</h1>
+            <p class="login-subtitle">
+                夏祭りの屋台記録を投稿・共有しよう<br>
+                Googleアカウントでログインしてください
+            </p>
+            
+            <div class="google-signin-container">
+                <div id="g_id_onload"
+                     data-client_id="263100277403-gj64v33k5sp9u1d5cne1fevv8tf57sg3.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left"
+                     data-width="300">
+                </div>
+            </div>
+            
+            <div class="demo-login-section">
+                <div class="demo-login-title">デモ用（開発・テスト用）</div>
+                <button class="demo-login-btn" onclick="demoLogin()">
+                    デモアカウントでログイン
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ヘッダー -->
-    <header class="header">
+    <header class="header" id="mainHeader" style="display: none;">
         <div class="header-content">
             <div class="logo">🏮 Hvillage夏祭り</div>
+            
+            <div class="user-info" id="userInfo">
+                <img class="user-avatar" id="userAvatar" src="" alt="アバター">
+                <span class="user-name" id="userName"></span>
+                <button class="logout-btn" onclick="logout()">ログアウト</button>
+            </div>
+            
             <div class="status-info">
-                <button class="refresh-btn" onclick="refreshPosts()">更新</button>
+                <div class="connection-status">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">接続中...</span>
+                </div>
+                <button class="refresh-btn" id="refreshBtn" onclick="refreshPosts()">更新</button>
                 <span id="postCount">0記事</span>
             </div>
         </div>
@@ -541,79 +818,91 @@
 
     <!-- メインコンテンツ -->
     <div class="container">
-        <!-- ウェルカムセクション -->
-        <div class="welcome-section">
-            <h1>夏祭り屋台記録</h1>
-            <p>Hvillageの夏祭りで出店する屋台の記録を投稿・共有しましょう</p>
-            <p>準備から片付けまで、みんなの思い出を残していこう</p>
-        </div>
-
-        <!-- タブナビゲーション -->
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('posts')">記事を読む</button>
-            <button class="tab" onclick="showTab('write')">記事を書く</button>
-        </div>
-
-        <!-- 記事一覧タブ -->
-        <div id="posts-tab" class="tab-content active">
-            <div class="article-list" id="articleList">
-                <!-- 記事がここに表示される -->
-            </div>
-            <div class="empty-state" id="emptyState" style="display: none;">
-                <h3>まだ記事がありません</h3>
-                <p>最初の記事を投稿してみましょう</p>
-            </div>
-        </div>
-
-        <!-- 記事作成タブ -->
-        <div id="write-tab" class="tab-content">
-            <div class="write-form">
-                <div class="form-title">新しい記事を書く</div>
+        <div class="main-content" id="mainContent">
+            <!-- ウェルカムセクション -->
+            <div class="welcome-section">
+                <h1>夏祭り屋台記録</h1>
+                <p>Hvillageの夏祭りで出店する屋台の記録を投稿・共有しましょう</p>
+                <p>準備から片付けまで、みんなの思い出をリアルタイムで共有</p>
                 
-                <div class="notice">
-                    匿名で投稿できます。ニックネームや屋台名は自由に設定してください。
+                <div class="server-info">
+                    📡 サーバーに接続中 - 他のユーザーの投稿もリアルタイムで表示されます
                 </div>
-                
-                <form id="articleForm">
-                    <div class="form-group">
-                        <label for="authorName">投稿者名</label>
-                        <input type="text" id="authorName" placeholder="ニックネームを入力" required>
+            </div>
+
+            <!-- エラーメッセージ -->
+            <div class="error-message" id="errorMessage" style="display: none;"></div>
+
+            <!-- タブナビゲーション -->
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('posts')">記事を読む</button>
+                <button class="tab" onclick="showTab('write')">記事を書く</button>
+            </div>
+
+            <!-- 記事一覧タブ -->
+            <div id="posts-tab" class="tab-content active">
+                <div class="loading" id="loadingPosts" style="display: none;">
+                    記事を読み込み中...
+                </div>
+                <div class="article-list" id="articleList">
+                    <!-- 記事がここに表示される -->
+                </div>
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <h3>まだ記事がありません</h3>
+                    <p>最初の記事を投稿してみましょう</p>
+                </div>
+            </div>
+
+            <!-- 記事作成タブ -->
+            <div id="write-tab" class="tab-content">
+                <div class="write-form">
+                    <div class="form-title">新しい記事を書く</div>
+                    
+                    <div class="notice">
+                        ログインしたGoogleアカウントの情報で投稿されます。投稿は即座にサーバーに保存され、他のユーザーと共有されます。
                     </div>
                     
-                    <div class="form-group">
-                        <label for="stallName">屋台名</label>
-                        <input type="text" id="stallName" placeholder="屋台の名前を入力" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="postTiming">投稿タイミング</label>
-                        <select id="postTiming" required>
-                            <option value="">選択してください</option>
-                            <option value="準備中">準備中</option>
-                            <option value="開催中">開催中</option>
-                            <option value="片付け中">片付け中</option>
-                            <option value="完了">完了</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="description">記事本文</label>
-                        <textarea id="description" placeholder="屋台の様子や感想、工夫した点などを書いてください..." required></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>写真</label>
-                        <div class="image-upload" id="imageUpload">
-                            <div class="image-upload-text">📷 写真をアップロード</div>
-                            <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+                    <form id="articleForm">
+                        <div class="form-group">
+                            <label for="authorName">投稿者名</label>
+                            <input type="text" id="authorName" placeholder="Googleアカウントから自動入力" readonly>
                         </div>
-                        <div class="image-preview" id="imagePreview"></div>
-                    </div>
-                    
-                    <button type="submit" class="publish-btn" id="publishBtn">
-                        記事を公開
-                    </button>
-                </form>
+                        
+                        <div class="form-group">
+                            <label for="stallName">屋台名</label>
+                            <input type="text" id="stallName" placeholder="屋台の名前を入力" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="postTiming">投稿タイミング</label>
+                            <select id="postTiming" required>
+                                <option value="">選択してください</option>
+                                <option value="準備中">準備中</option>
+                                <option value="開催中">開催中</option>
+                                <option value="片付け中">片付け中</option>
+                                <option value="完了">完了</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description">記事本文</label>
+                            <textarea id="description" placeholder="屋台の様子や感想、工夫した点などを書いてください..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>写真</label>
+                            <div class="image-upload" id="imageUpload">
+                                <div class="image-upload-text">📷 写真をアップロード</div>
+                                <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+                            </div>
+                            <div class="image-preview" id="imagePreview"></div>
+                        </div>
+                        
+                        <button type="submit" class="publish-btn" id="publishBtn">
+                            記事を公開
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -628,16 +917,252 @@
         // アプリケーションの状態管理
         let posts = [];
         let selectedImages = [];
+        let currentUser = null;
+        let lastUpdateTime = 0;
+        let isConnected = false;
+        let autoRefreshInterval = null;
+        let retryCount = 0;
+        const MAX_RETRY_COUNT = 5;
+
+        // Google認証設定
+        const GOOGLE_CLIENT_ID = "263100277403-gj64v33k5sp9u1d5cne1fevv8tf57sg3.apps.googleusercontent.com";
+
+        // API設定
+        const API_BASE_URL = 'https://api.hvillage-festival.example.com';
+        const USE_DEMO_MODE = true;
 
         // ページ読み込み時の初期化
         window.onload = function() {
             setupImageUpload();
-            loadPosts();
-            renderPosts();
+            checkExistingLogin();
         };
 
-        // ローカルストレージから投稿を読み込み
-        function loadPosts() {
+        // 既存のログインをチェック
+        function checkExistingLogin() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    showMainContent();
+                    initializeApp();
+                    startAutoRefresh();
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                    showLoginScreen();
+                }
+            } else {
+                showLoginScreen();
+            }
+        }
+
+        // Google認証コールバック
+        function handleCredentialResponse(response) {
+            try {
+                const payload = parseJwt(response.credential);
+                
+                currentUser = {
+                    id: payload.sub,
+                    name: payload.name,
+                    email: payload.email,
+                    picture: payload.picture,
+                    email_verified: payload.email_verified
+                };
+
+                // ユーザー情報を保存
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // メインコンテンツを表示
+                showMainContent();
+                initializeApp();
+                startAutoRefresh();
+                
+            } catch (error) {
+                console.error('認証エラー:', error);
+                showError('ログインに失敗しました。もう一度お試しください。');
+            }
+        }
+
+        // デモログイン
+        function demoLogin() {
+            currentUser = {
+                id: 'demo_user_123',
+                name: 'デモユーザー',
+                email: 'demo@hvillage.com',
+                picture: 'https://via.placeholder.com/32/00d084/ffffff?text=Demo',
+                email_verified: true
+            };
+
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showMainContent();
+            initializeApp();
+            startAutoRefresh();
+        }
+
+        // JWTトークンをパース
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        // ログイン画面を表示
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainHeader').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+
+        // メインコンテンツを表示
+        function showMainContent() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainHeader').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'block';
+            
+            // ユーザー情報を表示
+            document.getElementById('userAvatar').src = currentUser.picture;
+            document.getElementById('userName').textContent = currentUser.name;
+            
+            // フォームにユーザー名を自動入力
+            document.getElementById('authorName').value = currentUser.name;
+        }
+
+        // ログアウト
+        function logout() {
+            // Google Sign-Inをリセット
+            if (typeof google !== 'undefined' && google.accounts) {
+                google.accounts.id.disableAutoSelect();
+            }
+            
+            // ローカルデータをクリア
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            
+            // 自動更新を停止
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+            
+            // ログイン画面に戻る
+            showLoginScreen();
+        }
+
+        // アプリケーション初期化
+        async function initializeApp() {
+            updateConnectionStatus('connecting');
+            showLoading(true);
+            
+            try {
+                await loadPostsFromServer();
+                updateConnectionStatus('connected');
+                retryCount = 0;
+            } catch (error) {
+                console.error('初期化エラー:', error);
+                updateConnectionStatus('disconnected');
+                handleConnectionError();
+            }
+            
+            renderPosts();
+            showLoading(false);
+        }
+
+        // サーバーから投稿を読み込み
+        async function loadPostsFromServer() {
+            try {
+                if (USE_DEMO_MODE) {
+                    await loadFromLocalStorage();
+                    isConnected = true;
+                    return;
+                }
+
+                const url = `${API_BASE_URL}/posts${lastUpdateTime ? `?since=${lastUpdateTime}` : ''}`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.id}` // 簡易認証
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                if (lastUpdateTime === 0) {
+                    posts = data.posts || [];
+                } else {
+                    const newPosts = data.posts || [];
+                    newPosts.forEach(newPost => {
+                        if (!posts.find(p => p.id === newPost.id)) {
+                            newPost.isNew = true;
+                            posts.unshift(newPost);
+                        }
+                    });
+                }
+
+                lastUpdateTime = data.timestamp || Date.now();
+                isConnected = true;
+                saveToLocalStorage();
+
+            } catch (error) {
+                console.error('サーバー読み込みエラー:', error);
+                isConnected = false;
+                
+                if (posts.length === 0) {
+                    await loadFromLocalStorage();
+                }
+                
+                throw error;
+            }
+        }
+
+        // サーバーに投稿を送信
+        async function submitPostToServer(postData) {
+            try {
+                if (USE_DEMO_MODE) {
+                    posts.unshift(postData);
+                    saveToLocalStorage();
+                    return { success: true };
+                }
+
+                const response = await fetch(`${API_BASE_URL}/posts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.id}`
+                    },
+                    body: JSON.stringify(postData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                posts.unshift(postData);
+                saveToLocalStorage();
+                
+                return result;
+
+            } catch (error) {
+                console.error('投稿送信エラー:', error);
+                
+                postData.offline = true;
+                posts.unshift(postData);
+                saveToLocalStorage();
+                
+                showError('サーバーへの送信に失敗しました。オフラインで保存されました。');
+                return { success: true, offline: true };
+            }
+        }
+
+        // ローカルストレージから読み込み
+        async function loadFromLocalStorage() {
             const saved = localStorage.getItem('hvillage_posts');
             if (saved) {
                 try {
@@ -648,15 +1173,115 @@
             }
         }
 
-        // ローカルストレージに投稿を保存
-        function savePosts() {
+        // ローカルストレージに保存
+        function saveToLocalStorage() {
             localStorage.setItem('hvillage_posts', JSON.stringify(posts));
         }
 
-        // 投稿を手動更新
-        function refreshPosts() {
-            loadPosts();
+        // 接続状況を更新
+        function updateConnectionStatus(status) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const refreshBtn = document.getElementById('refreshBtn');
+
+            statusDot.className = 'status-dot';
+            refreshBtn.disabled = false;
+
+            switch (status) {
+                case 'connected':
+                    statusDot.classList.add('connected');
+                    statusText.textContent = 'オンライン';
+                    isConnected = true;
+                    break;
+                case 'disconnected':
+                    statusDot.classList.add('offline');
+                    statusText.textContent = 'オフライン';
+                    isConnected = false;
+                    break;
+                case 'connecting':
+                    statusDot.classList.add('connecting');
+                    statusText.textContent = '接続中...';
+                    refreshBtn.disabled = true;
+                    break;
+            }
+        }
+
+        // 接続エラー処理
+        function handleConnectionError() {
+            retryCount++;
+            
+            if (retryCount <= MAX_RETRY_COUNT) {
+                showError(`サーバーに接続できません。${5 * retryCount}秒後に再試行します...`);
+                
+                setTimeout(async () => {
+                    updateConnectionStatus('connecting');
+                    try {
+                        await loadPostsFromServer();
+                        updateConnectionStatus('connected');
+                        hideError();
+                    } catch (error) {
+                        updateConnectionStatus('disconnected');
+                        handleConnectionError();
+                    }
+                }, 5000 * retryCount);
+            } else {
+                showError('サーバーに接続できません。オフラインモードで動作します。');
+            }
+        }
+
+        // 自動更新開始
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(async () => {
+                if (isConnected) {
+                    try {
+                        await loadPostsFromServer();
+                        renderPosts();
+                    } catch (error) {
+                        updateConnectionStatus('disconnected');
+                    }
+                }
+            }, 15000);
+        }
+
+        // 手動更新
+        async function refreshPosts() {
+            if (!isConnected && retryCount > MAX_RETRY_COUNT) {
+                retryCount = 0;
+            }
+            
+            updateConnectionStatus('connecting');
+            showLoading(true);
+            
+            try {
+                await loadPostsFromServer();
+                updateConnectionStatus('connected');
+                hideError();
+            } catch (error) {
+                updateConnectionStatus('disconnected');
+                if (posts.length === 0) {
+                    showError('サーバーに接続できません。しばらく待ってから再試行してください。');
+                }
+            }
+            
             renderPosts();
+            showLoading(false);
+        }
+
+        // ローディング表示制御
+        function showLoading(show) {
+            document.getElementById('loadingPosts').style.display = show ? 'block' : 'none';
+        }
+
+        // エラーメッセージ表示
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // エラーメッセージ非表示
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
         }
 
         // タブ切り替え
@@ -737,14 +1362,14 @@
             updateImagePreview();
         }
 
-        // ユーザーアバターを生成
-        function generateAvatar(name) {
-            return name.charAt(0);
-        }
-
         // 記事フォーム送信
-        document.getElementById('articleForm').addEventListener('submit', function(e) {
+        document.getElementById('articleForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            if (!currentUser) {
+                showError('ログインが必要です。');
+                return;
+            }
             
             if (selectedImages.length === 0) {
                 alert('少なくとも1枚の写真を選択してください。');
@@ -753,33 +1378,40 @@
             
             const publishBtn = document.getElementById('publishBtn');
             publishBtn.disabled = true;
-            publishBtn.textContent = '公開中...';
-            
-            const authorName = document.getElementById('authorName').value;
+            publishBtn.textContent = '投稿中...';
             
             const postData = {
                 id: 'post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                authorName: authorName,
-                authorAvatar: generateAvatar(authorName),
+                authorId: currentUser.id,
+                authorName: currentUser.name,
+                authorEmail: currentUser.email,
+                authorPicture: currentUser.picture,
                 stallName: document.getElementById('stallName').value,
                 postTiming: document.getElementById('postTiming').value,
                 description: document.getElementById('description').value,
                 images: selectedImages.map(img => img.dataUrl),
                 likes: 0,
-                date: new Date().toISOString()
+                date: new Date().toISOString(),
+                isNew: true
             };
             
-            // 投稿を追加
-            posts.unshift(postData);
-            savePosts();
+            const result = await submitPostToServer(postData);
             
-            // フォームリセット
-            document.getElementById('articleForm').reset();
-            selectedImages = [];
-            updateImagePreview();
-            
-            renderPosts();
-            showTab('posts');
+            if (result.success) {
+                document.getElementById('articleForm').reset();
+                document.getElementById('authorName').value = currentUser.name; // 名前を再設定
+                selectedImages = [];
+                updateImagePreview();
+                
+                renderPosts();
+                showTab('posts');
+                
+                if (result.offline) {
+                    showError('オフラインで投稿が保存されました。オンライン時に同期されます。');
+                }
+            } else {
+                showError('投稿に失敗しました。もう一度お試しください。');
+            }
             
             publishBtn.disabled = false;
             publishBtn.textContent = '記事を公開';
@@ -805,13 +1437,21 @@
             
             articleList.innerHTML = sortedPosts.map(post => {
                 const imageClass = post.images.length === 1 ? 'single' : 'multiple';
+                const authorAvatar = post.authorPicture ? 
+                    `<img src="${post.authorPicture}" alt="${post.authorName}">` : 
+                    post.authorName.charAt(0);
+                
                 return `
-                    <article class="article">
+                    <article class="article ${post.isNew ? 'new-post' : ''}">
                         <div class="article-header">
                             <div class="article-meta">
-                                <div class="author-avatar">${post.authorAvatar}</div>
+                                <div class="author-avatar">${authorAvatar}</div>
                                 <div class="author-info">
-                                    <div class="author-name">${post.authorName}</div>
+                                    <div class="author-name">
+                                        ${post.authorName}
+                                        ${post.isNew ? '<span class="new-badge">NEW</span>' : ''}
+                                        ${post.offline ? '<span class="new-badge" style="background: #ffa500;">オフライン</span>' : ''}
+                                    </div>
                                     <div class="article-date">${formatDate(post.date)}</div>
                                 </div>
                                 <div class="stall-badge">${post.postTiming}</div>
@@ -832,7 +1472,8 @@
                         
                         <div class="article-actions">
                             <button class="like-btn ${isLiked(post.id) ? 'liked' : ''}" 
-                                    onclick="toggleLike('${post.id}')">
+                                    onclick="toggleLike('${post.id}')"
+                                    ${!isConnected ? 'disabled' : ''}>
                                 ${isLiked(post.id) ? '❤️' : '🤍'} ${post.likes}
                             </button>
                             <button class="share-btn" onclick="shareArticle('${post.id}')">
@@ -842,6 +1483,15 @@
                     </article>
                 `;
             }).join('');
+            
+            setTimeout(() => {
+                posts.forEach(post => {
+                    if (post.isNew) {
+                        post.isNew = false;
+                    }
+                });
+                saveToLocalStorage();
+            }, 3000);
         }
 
         // いいね状態を確認
@@ -851,7 +1501,12 @@
         }
 
         // いいね切り替え
-        function toggleLike(postId) {
+        async function toggleLike(postId) {
+            if (!currentUser) {
+                showError('いいねするにはログインが必要です。');
+                return;
+            }
+            
             const post = posts.find(p => p.id === postId);
             if (!post) return;
             
@@ -868,7 +1523,7 @@
             }
             
             localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
-            savePosts();
+            saveToLocalStorage();
             renderPosts();
         }
 
@@ -884,7 +1539,6 @@
                     url: window.location.href
                 });
             } else {
-                // フォールバック: URLをコピー
                 navigator.clipboard.writeText(window.location.href).then(() => {
                     alert('URLをコピーしました');
                 });
@@ -925,6 +1579,13 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal();
+            }
+        });
+
+        // ページ離脱時にクリーンアップ
+        window.addEventListener('beforeunload', () => {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
             }
         });
     </script>
