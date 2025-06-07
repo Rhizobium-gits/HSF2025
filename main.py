@@ -32,6 +32,7 @@ class Post(BaseModel):
     id: str
     author: str
     author_id: str
+    author_picture: Optional[str] = None
     text: str
     image_url: Optional[str] = None
     likes: int = 0
@@ -65,13 +66,13 @@ class Profile(BaseModel):
 
 user_profiles: Dict[str, Profile] = {}
 
-BUILDING_EMOJI = {
-    "バジル": "🌿",
-    "パプリカ": "🌶",
-    "ローズマリー": "🌱",
-    "ターメリック": "🌾",
+BUILDING_ICONS = {
+    "バジル": "grass",
+    "パプリカ": "local_florist",
+    "ローズマリー": "spa",
+    "ターメリック": "eco",
 }
-BUILDINGS = list(BUILDING_EMOJI.keys())
+BUILDINGS = list(BUILDING_ICONS.keys())
 
 
 def get_current_user(request: Request):
@@ -93,7 +94,7 @@ async def timeline(request: Request):
             'user': user,
             'posts': posts,
             'profiles': user_profiles,
-            'emojis': BUILDING_EMOJI,
+            'icons': BUILDING_ICONS,
             'active': 'timeline',
         },
     )
@@ -127,7 +128,7 @@ async def profile(request: Request):
             'user': user,
             'profile': profile,
             'buildings': BUILDINGS,
-            'emojis': BUILDING_EMOJI,
+            'icons': BUILDING_ICONS,
             'active': 'profile',
         },
     )
@@ -166,7 +167,11 @@ async def auth(request: Request):
         resp = await oauth.google.get('userinfo', token=token)
         user = resp.json()
 
-    request.session['user'] = {'id': user['id'], 'name': user['name']}
+    request.session['user'] = {
+        'id': user['id'],
+        'name': user['name'],
+        'picture': user.get('picture'),
+    }
     if user['id'] not in user_profiles:
         user_profiles[user['id']] = Profile()
     return RedirectResponse('/timeline')
@@ -195,6 +200,7 @@ async def create_post(request: Request, text: str = Form(...), image: UploadFile
         id=uuid.uuid4().hex,
         author=user['name'],
         author_id=user['id'],
+        author_picture=user.get('picture'),
         text=text,
         image_url=image_url,
     )

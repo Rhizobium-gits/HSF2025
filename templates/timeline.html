@@ -5,9 +5,13 @@
 {% else %}
 {% for post in posts %}
 <div class="post{% if not post.image_url %} no-image{% endif %}">
-    <p><strong>{{ post.author }}</strong>
-    {% set profile = profiles.get(post.author_id) %}
-    {% if profile %}{{ emojis[profile.building] }}{% endif %}
+    <p>
+        {% if post.author_picture %}
+        <img src="{{ post.author_picture }}" class="avatar" alt="avatar">
+        {% endif %}
+        <strong>{{ post.author }}</strong>
+        {% set profile = profiles.get(post.author_id) %}
+        {% if profile %}<span class="material-symbols-rounded">{{ icons[profile.building] }}</span>{% endif %}
     </p>
     <p>{{ post.text }}</p>
     {% if post.image_url %}

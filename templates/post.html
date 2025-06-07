@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 {% if user %}
-<form class="post-form" action="/posts" method="post" enctype="multipart/form-data">
+<form class="post-form popup-submit" action="/posts" method="post" enctype="multipart/form-data" data-message="投稿中...">
     <input type="text" name="text" placeholder="Write something" required>
     <input type="file" name="image">
     <button type="submit">Post</button>
