@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title or '🏮H Village 2025 夏祭り' }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@300;400;500;600;700" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray-50: #fafafa;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-300: #d4d4d4;
+            --gray-400: #a3a3a3;
+            --gray-500: #737373;
+            --gray-600: #525252;
+            --gray-700: #404040;
+            --gray-800: #262626;
+            --gray-900: #171717;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--white);
+            color: var(--gray-900);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--white);
+            border-left: 1px solid var(--gray-200);
+            border-right: 1px solid var(--gray-200);
+            position: relative;
+        }
+
+        header {
+            background: var(--white);
+            color: var(--black);
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .user-info {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .user-info a {
+            color: var(--gray-600);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .user-info a:hover {
+            border-bottom-color: var(--gray-600);
+        }
+
+        .content {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            padding-bottom: 100px;
+            background: var(--gray-50);
+        }
+
+        .post-form, .profile-form {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+            margin-bottom: 1rem;
+        }
+
+        .post-form input[type="text"],
+        .post-form input[type="file"],
+        .profile-form input[type="text"],
+        .profile-form select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: inherit;
+        }
+
+        .post-form input[type="text"]:focus,
+        .profile-form input[type="text"]:focus,
+        .profile-form select:focus {
+            outline: none;
+            border-color: var(--black);
+        }
+
+        .post-form input[type="file"] {
+            border: 1px dashed var(--gray-300);
+            background: var(--gray-50);
+            cursor: pointer;
+        }
+
+        .post-form button,
+        .profile-form button {
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .post-form button:hover,
+        .profile-form button:hover {
+            background: var(--gray-800);
+        }
+
+        .post-form button:active,
+        .profile-form button:active {
+            transform: translateY(1px);
+        }
+
+        .profile-form label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+
+        .post {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s;
+        }
+
+        .post:hover {
+            border-color: var(--gray-300);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            border: 1px solid var(--gray-200);
+            filter: grayscale(100%);
+        }
+
+        .post-author {
+            font-weight: 500;
+            color: var(--black);
+            margin-right: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .building-icon {
+            color: var(--gray-500);
+            font-size: 1rem;
+        }
+
+        .post-text {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            color: var(--gray-800);
+            font-size: 0.875rem;
+        }
+
+        .post img {
+            width: 100%;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--gray-200);
+            filter: grayscale(20%);
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--gray-100);
+        }
+
+        .icon-btn {
+            background: none;
+            border: 1px solid var(--gray-300);
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .icon-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+            color: var(--black);
+        }
+
+        .icon-btn:active {
+            transform: translateY(1px);
+        }
+
+        .icon-btn.liked {
+            background: var(--black);
+            border-color: var(--black);
+            color: var(--white);
+        }
+
+        .icon-btn.liked:hover {
+            background: var(--gray-800);
+        }
+
+        .icon-btn .material-symbols-rounded {
+            font-size: 1rem;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: var(--white);
+            border-top: 1px solid var(--gray-200);
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gray-500);
+            transition: all 0.2s;
+            padding: 0.5rem;
+            border-radius: 4px;
+            min-width: 60px;
+        }
+
+        .bottom-nav a:hover,
+        .bottom-nav a.active {
+            color: var(--black);
+            background: var(--gray-100);
+        }
+
+        .bottom-nav .material-symbols-rounded {
+            font-size: 1.25rem;
+            margin-bottom: 0.125rem;
+        }
+
+        .bottom-nav-label {
+            font-size: 0.625rem;
+            font-weight: 500;
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: var(--white);
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .login-prompt p {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .login-prompt a {
+            display: inline-block;
+            background: var(--black);
+            color: var(--white);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .login-prompt a:hover {
+            background: var(--gray-800);
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            max-width: 400px;
+            margin: 2rem auto;
+            background: var(--white);
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .error-container h1 {
+            color: var(--black);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .error-container p {
+            margin-bottom: 1rem;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .error-container a {
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .error-container a:hover {
+            border-bottom-color: var(--black);
+        }
+
+        .profile-current {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-current h3 {
+            margin-bottom: 0.75rem;
+            color: var(--black);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .profile-current p {
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+                border-left: none;
+                border-right: none;
+            }
+            
+            .content {
+                padding: 0.75rem;
+                padding-bottom: 100px;
+            }
+            
+            .post-form, .profile-form, .post {
+                padding: 1rem;
+            }
+        }
+
+        /* ローディング状態 */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border: 2px solid var(--gray-300);
+            border-radius: 50%;
+            border-top-color: var(--black);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* フォーカス可視性 */
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--black);
+            outline-offset: 2px;
+        }
+
+        /* セレクション */
+        ::selection {
+            background: var(--black);
+            color: var(--white);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🏮H Village 2025 夏祭り</h1>
+        {% if user %}
+        <div class="user-info">{{ user['name'] }} (<a href="/logout">logout</a>)</div>
+        {% endif %}
+    </header>
+    <div class="content">
+        <!-- Timeline Page -->
+        {% if template_name == 'timeline' %}
+            {% if not user %}
+            <div class="login-prompt">
+                <p>SNSを利用するにはログインが必要です</p>
+                <a href="/login">Googleでログイン</a>
+            </div>
+            {% else %}
+            {% for post in posts %}
+            <div class="post{% if not post.image_url %} no-image{% endif %}">
+                <div class="post-header">
+                    {% if post.author_picture %}
+                    <img src="{{ post.author_picture }}" class="avatar" alt="avatar">
+                    {% endif %}
+                    <span class="post-author">{{ post.author }}</span>
+                    {% set profile = profiles.get(post.author_id) %}
+                    {% if profile %}<span class="material-symbols-rounded building-icon">{{ icons[profile.building] }}</span>{% endif %}
+                </div>
+                <div class="post-text">{{ post.text }}</div>
+                {% if post.image_url %}
+                <img src="{{ post.image_url }}" alt="投稿画像">
+                {% endif %}
+                <div class="post-actions">
+                    <form action="/posts/{{ post.id }}/like" method="post" style="display:inline;">
+                        {% if user and (user['id'] in post.liked_by) %}
+                        <button type="submit" class="icon-btn liked">
+                            <span class="material-symbols-rounded">favorite</span> {{ post.likes }}
+                        </button>
+                        {% else %}
+                        <button type="submit" class="icon-btn">
+                            <span class="material-symbols-rounded">favorite_border</span> {{ post.likes }}
+                        </button>
+                        {% endif %}
+                    </form>
+                    {% if user and post.author_id == user['id'] %}
+                    <form action="/posts/{{ post.id }}/delete" method="post" style="display:inline;">
+                        <button type="submit" class="icon-btn" onclick="return confirm('この投稿を削除しますか？')">
+                            <span class="material-symbols-rounded">delete</span>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        <!-- Post Page -->
+        {% if template_name == 'post' %}
+            {% if user %}
+            <form class="post-form popup-submit" action="/posts" method="post" enctype="multipart/form-data" data-message="投稿中...">
+                <input type="text" name="text" placeholder="今何してる？" required>
+                <input type="file" name="image" accept="image/*">
+                <button type="submit">投稿</button>
+            </form>
+            {% else %}
+            <div class="login-prompt">
+                <p>投稿するにはログインが必要です</p>
+                <a href="/login">Googleでログイン</a>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <!-- Profile Page -->
+        {% if template_name == 'profile' %}
+            {% if user %}
+            <div class="profile-current">
+                <h3>現在のプロフィール</h3>
+                <p><strong>住んでいる棟:</strong> {{ profile.building }} 
+                    <span class="material-symbols-rounded building-icon">{{ icons[profile.building] }}</span>
+                </p>
+                <p><strong>ひとこと:</strong> {{ profile.comment or 'まだ設定されていません' }}</p>
+            </div>
+            <form class="profile-form popup-submit" action="/profile" method="post" data-message="保存中...">
+                <label>住んでいる棟
+                    <select name="building">
+                        {% for b in buildings %}
+                        <option value="{{ b }}" {% if profile.building == b %}selected{% endif %}>{{ b }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>ひとこと
+                    <input type="text" name="comment" value="{{ profile.comment }}" placeholder="自己紹介やひとことを入力">
+                </label>
+                <button type="submit">保存</button>
+            </form>
+            {% else %}
+            <div class="login-prompt">
+                <p>プロフィールを編集するにはログインが必要です</p>
+                <a href="/login">Googleでログイン</a>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <!-- Error Page -->
+        {% if template_name == 'error' %}
+        <div class="error-container">
+            <h1>認証エラー</h1>
+            <p>{{ error }}</p>
+            <p><a href="/">ホームに戻る</a></p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <nav class="bottom-nav">
+        <a href="/timeline"{% if active == 'timeline' %} class="active"{% endif %}>
+            <span class="material-symbols-rounded">home</span>
+            <span class="bottom-nav-label">ホーム</span>
+        </a>
+        <a href="/post"{% if active == 'post' %} class="active"{% endif %}>
+            <span class="material-symbols-rounded">add</span>
+            <span class="bottom-nav-label">投稿</span>
+        </a>
+        <a href="/profile"{% if active == 'profile' %} class="active"{% endif %}>
+            <span class="material-symbols-rounded">person</span>
+            <span class="bottom-nav-label">プロフィール</span>
+        </a>
+    </nav>
+</div>
+<script>
+// フォーム送信時のローディング表示
+document.querySelectorAll('.popup-submit').forEach(form => {
+    form.addEventListener('submit', function() {
+        const message = this.dataset.message || '処理中...';
+        this.classList.add('loading');
+        const button = this.querySelector('button[type="submit"]');
+        if (button) {
+            button.textContent = message;
+            button.disabled = true;
+        }
+    });
+});
+
+// 画像のレイジーローディング
+document.querySelectorAll('img').forEach(img => {
+    img.loading = 'lazy';
+});
+
+// キーボードナビゲーション改善
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.activeElement.blur();
+    }
+});
+</script>
+</body>
+</html>
