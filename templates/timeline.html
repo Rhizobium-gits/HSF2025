@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if not user %}
+<p><a href="/login">Login with Google</a></p>
+{% else %}
+{% for post in posts %}
+<div class="post">
+    <p><strong>{{ post.author }}</strong></p>
+    <p>{{ post.text }}</p>
+    {% if post.image_url %}
+    <img src="{{ post.image_url }}" alt="image">
+    {% endif %}
+    <form action="/posts/{{ post.id }}/like" method="post" style="display:inline;">
+        {% if user and (user['id'] in post.liked_by) %}
+        <button type="submit">Unlike ({{ post.likes }})</button>
+        {% else %}
+        <button type="submit">Like ({{ post.likes }})</button>
+        {% endif %}
+    </form>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

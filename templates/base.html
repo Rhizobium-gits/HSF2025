@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title or 'SNS' }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>HSF SNS</h1>
+        {% if user %}
+        <div class="user-info">{{ user['name'] }} (<a href="/logout">logout</a>)</div>
+        {% endif %}
+    </header>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+    <nav class="bottom-nav">
+        <a href="/post"{% if active == 'post' %} class="active"{% endif %}>投稿</a>
+        <a href="/timeline"{% if active == 'timeline' %} class="active"{% endif %}>タイムライン</a>
+        <a href="/profile"{% if active == 'profile' %} class="active"{% endif %}>プロフィール</a>
+    </nav>
+</div>
+</body>
+</html>
