@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, Form, UploadFile, File, Depends
+import os
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -10,7 +11,7 @@ import uuid
 import shutil
 
 app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="CHANGE_ME")
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", "change-me"))
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -18,11 +19,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # OAuth configuration (replace with actual credentials)
 oauth = OAuth()
 oauth.register(
-    name='google',
-    client_id='GOOGLE_CLIENT_ID',
-    client_secret='GOOGLE_CLIENT_SECRET',
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_kwargs={'scope': 'openid email profile'}
+    name="google",
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
 )
 
 class Post(BaseModel):
