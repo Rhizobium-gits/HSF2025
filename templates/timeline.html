@@ -15,14 +15,20 @@
     {% endif %}
     <form action="/posts/{{ post.id }}/like" method="post" style="display:inline;">
         {% if user and (user['id'] in post.liked_by) %}
-        <button type="submit">❤️ {{ post.likes }}</button>
+        <button type="submit" class="icon-btn liked">
+            <span class="material-symbols-rounded">favorite</span> {{ post.likes }}
+        </button>
         {% else %}
-        <button type="submit">🤍 {{ post.likes }}</button>
+        <button type="submit" class="icon-btn">
+            <span class="material-symbols-rounded">favorite</span> {{ post.likes }}
+        </button>
         {% endif %}
     </form>
     {% if user and post.author_id == user['id'] %}
     <form action="/posts/{{ post.id }}/delete" method="post" style="display:inline;">
-        <button type="submit">🗑</button>
+        <button type="submit" class="icon-btn">
+            <span class="material-symbols-rounded">delete</span>
+        </button>
     </form>
     {% endif %}
 </div>

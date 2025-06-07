@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <title>{{ title or 'SNS' }}</title>
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@400;700" />
 </head>
 <body>
 <div class="container">
     <header>
-        <h1 style="color:#fe2c55">HSF SNS</h1>
+        <h1 style="color:#6200ee">HSF SNS</h1>
         {% if user %}
         <div class="user-info">{{ user['name'] }} (<a href="/logout">logout</a>)</div>
         {% endif %}
@@ -17,9 +18,15 @@
         {% block content %}{% endblock %}
     </div>
     <nav class="bottom-nav">
-        <a href="/timeline"{% if active == 'timeline' %} class="active"{% endif %}>🏠</a>
-        <a href="/post"{% if active == 'post' %} class="active"{% endif %}>➕</a>
-        <a href="/profile"{% if active == 'profile' %} class="active"{% endif %}>👤</a>
+        <a href="/timeline"{% if active == 'timeline' %} class="active"{% endif %}>
+            <span class="material-symbols-rounded">home</span>
+        </a>
+        <a href="/post"{% if active == 'post' %} class="active"{% endif %}>
+            <span class="material-symbols-rounded">add</span>
+        </a>
+        <a href="/profile"{% if active == 'profile' %} class="active"{% endif %}>
+            <span class="material-symbols-rounded">person</span>
+        </a>
     </nav>
 </div>
 </body>
