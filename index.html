@@ -5,6 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hvillage夏祭り投稿</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, orderBy, query, doc, updateDoc, increment, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Firebase設定（実際の設定値に置き換えてください）
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "hvillage-festival.firebaseapp.com",
+            projectId: "hvillage-festival",
+            storageBucket: "hvillage-festival.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Firebase初期化
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // グローバルに公開
+        window.firebaseApp = app;
+        window.firestoreDb = db;
+        window.firestoreModules = {
+            collection,
+            addDoc,
+            getDocs,
+            onSnapshot,
+            orderBy,
+            query,
+            doc,
+            updateDoc,
+            increment,
+            getDoc,
+            setDoc
+        };
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -222,6 +259,18 @@
             font-size: 14px;
             color: #0066cc;
             text-align: center;
+        }
+        
+        .realtime-indicator {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            text-align: center;
+            display: none;
         }
         
         .tabs {
@@ -808,7 +857,11 @@
                 <p>準備から片付けまで、みんなの思い出をリアルタイムで共有</p>
                 
                 <div class="server-info">
-                    📡 サーバーに接続中 - 他のユーザーの投稿もリアルタイムで表示されます
+                    🔥 Firebase Firestore - 全ユーザーの投稿がリアルタイムで同期されます
+                </div>
+                
+                <div class="realtime-indicator" id="realtimeIndicator">
+                    🔴 ライブ更新中 - 新しい投稿が自動で表示されます
                 </div>
             </div>
 
@@ -841,7 +894,7 @@
                     <div class="form-title">新しい記事を書く</div>
                     
                     <div class="notice">
-                        ログインユーザーとして投稿されます。投稿は即座にサーバーに保存され、他のユーザーと共有されます。
+                        投稿は即座にFirebase Firestoreに保存され、全ユーザーとリアルタイムで共有されます。
                     </div>
                     
                     <form id="articleForm">
@@ -900,15 +953,12 @@
         let posts = [];
         let selectedImages = [];
         let currentUser = null;
-        let lastUpdateTime = 0;
         let isConnected = false;
-        let autoRefreshInterval = null;
-        let retryCount = 0;
-        const MAX_RETRY_COUNT = 5;
+        let postsListener = null;
 
-        // API設定
-        const API_BASE_URL = 'https://api.hvillage-festival.example.com';
-        const USE_DEMO_MODE = true;
+        // Firebase設定フラグ
+        let firebaseConfigured = false;
+        let USE_FIREBASE = true; // Firebase使用フラグ
 
         // Google OAuth設定
         const GOOGLE_CLIENT_ID = '263100277403-fobgd6h9ctvk79ooqi7rhps6fv2tfrcn.apps.googleusercontent.com';
@@ -916,8 +966,32 @@
         // ページ読み込み時の初期化
         window.onload = function() {
             setupImageUpload();
-            checkLoginStatus();
+            
+            // Firebase初期化を待つ
+            setTimeout(() => {
+                checkFirebaseConfig();
+                checkLoginStatus();
+            }, 1000);
         };
+
+        // Firebase設定確認
+        function checkFirebaseConfig() {
+            try {
+                if (window.firestoreDb && window.firestoreModules) {
+                    firebaseConfigured = true;
+                    updateConnectionStatus('connected');
+                    console.log('Firebase接続完了');
+                } else {
+                    throw new Error('Firebase未設定');
+                }
+            } catch (error) {
+                console.warn('Firebase接続エラー:', error);
+                firebaseConfigured = false;
+                USE_FIREBASE = false;
+                updateConnectionStatus('offline');
+                showError('Firebase未設定のため、ローカルモードで動作しています。');
+            }
+        }
 
         // ログイン状態をチェック
         function checkLoginStatus() {
@@ -956,7 +1030,10 @@
             // フォームにユーザー名を自動入力
             document.getElementById('authorName').value = currentUser.name;
             
-            startAutoRefresh();
+            // リアルタイム更新インジケーターを表示
+            if (USE_FIREBASE && firebaseConfigured) {
+                document.getElementById('realtimeIndicator').style.display = 'block';
+            }
         }
 
         // Google認証コールバック
@@ -1000,12 +1077,14 @@
 
         // ログアウト
         function logout() {
+            // リアルタイムリスナーを停止
+            if (postsListener) {
+                postsListener();
+                postsListener = null;
+            }
+            
             currentUser = null;
             localStorage.removeItem('currentUser');
-            
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-            }
             
             // Google Sign-In をリセット
             if (typeof google !== 'undefined' && google.accounts) {
@@ -1031,136 +1110,115 @@
             showLoading(true);
             
             try {
-                await loadPostsFromServer();
-                updateConnectionStatus('connected');
-                retryCount = 0;
+                if (USE_FIREBASE && firebaseConfigured) {
+                    await setupRealtimeListener();
+                    updateConnectionStatus('connected');
+                } else {
+                    await loadFromLocalStorage();
+                    updateConnectionStatus('offline');
+                }
             } catch (error) {
                 console.error('初期化エラー:', error);
-                updateConnectionStatus('disconnected');
-                handleConnectionError();
+                updateConnectionStatus('offline');
+                await loadFromLocalStorage();
+                showError('Firebase接続に失敗しました。ローカルモードで動作します。');
             }
             
             renderPosts();
             showLoading(false);
         }
 
-        // サーバーから投稿を読み込み
-        async function loadPostsFromServer() {
+        // Firestoreリアルタイムリスナーを設定
+        async function setupRealtimeListener() {
+            if (!USE_FIREBASE || !firebaseConfigured) return;
+
             try {
-                if (USE_DEMO_MODE) {
-                    await loadFromLocalStorage();
-                    isConnected = true;
-                    return;
-                }
-
-                const url = `${API_BASE_URL}/posts${lastUpdateTime ? `?since=${lastUpdateTime}` : ''}`;
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.id}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
+                const { collection, query, orderBy, onSnapshot } = window.firestoreModules;
+                const db = window.firestoreDb;
                 
-                if (lastUpdateTime === 0) {
-                    posts = data.posts || [];
-                } else {
-                    const newPosts = data.posts || [];
-                    newPosts.forEach(newPost => {
-                        if (!posts.find(p => p.id === newPost.id)) {
-                            newPost.isNew = true;
-                            posts.unshift(newPost);
-                        }
+                const postsRef = collection(db, 'posts');
+                const q = query(postsRef, orderBy('createdAt', 'desc'));
+                
+                postsListener = onSnapshot(q, (querySnapshot) => {
+                    const newPosts = [];
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        newPosts.push({
+                            id: doc.id,
+                            ...data,
+                            date: data.createdAt?.toDate?.()?.toISOString() || data.createdAt || new Date().toISOString()
+                        });
                     });
-                }
-
-                lastUpdateTime = data.timestamp || Date.now();
-                isConnected = true;
-                saveToLocalStorage();
-
+                    
+                    // 新しい投稿をチェック
+                    const previousPostCount = posts.length;
+                    posts = newPosts;
+                    
+                    if (previousPostCount > 0 && newPosts.length > previousPostCount) {
+                        // 新しい投稿がある場合、最新の投稿にマークを付ける
+                        for (let i = 0; i < newPosts.length - previousPostCount; i++) {
+                            posts[i].isNew = true;
+                        }
+                    }
+                    
+                    renderPosts();
+                    updatePostCount();
+                    
+                    console.log('投稿をリアルタイム更新:', posts.length);
+                }, (error) => {
+                    console.error('Firestoreリスナーエラー:', error);
+                    showError('リアルタイム更新でエラーが発生しました。');
+                });
+                
             } catch (error) {
-                console.error('サーバー読み込みエラー:', error);
-                isConnected = false;
-                
-                if (posts.length === 0) {
-                    await loadFromLocalStorage();
-                }
-                
+                console.error('リアルタイムリスナー設定エラー:', error);
                 throw error;
             }
         }
 
-        // サーバーに投稿を送信
-        async function submitPostToServer(postData) {
+        // Firestoreに投稿を追加
+        async function addPostToFirestore(postData) {
+            if (!USE_FIREBASE || !firebaseConfigured) {
+                throw new Error('Firebase未設定');
+            }
+
             try {
-                if (USE_DEMO_MODE) {
-                    posts.unshift(postData);
-                    saveToLocalStorage();
-                    return { success: true };
-                }
-
-                const response = await fetch(`${API_BASE_URL}/posts`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.id}`
-                    },
-                    body: JSON.stringify(postData)
+                const { collection, addDoc } = window.firestoreModules;
+                const db = window.firestoreDb;
+                
+                const docRef = await addDoc(collection(db, 'posts'), {
+                    ...postData,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const result = await response.json();
-                posts.unshift(postData);
-                saveToLocalStorage();
                 
-                return result;
-
+                console.log('投稿をFirestoreに追加:', docRef.id);
+                return { success: true, id: docRef.id };
+                
             } catch (error) {
-                console.error('投稿送信エラー:', error);
-                
-                postData.offline = true;
-                posts.unshift(postData);
-                saveToLocalStorage();
-                
-                showError('サーバーへの送信に失敗しました。オフラインで保存されました。');
-                return { success: true, offline: true };
+                console.error('Firestore投稿エラー:', error);
+                throw error;
             }
         }
 
-        // いいねをサーバーに送信
-        async function submitLikeToServer(postId, liked) {
+        // Firestoreでいいね更新
+        async function updateLikeInFirestore(postId, increment) {
+            if (!USE_FIREBASE || !firebaseConfigured) return;
+
             try {
-                if (USE_DEMO_MODE) {
-                    return { success: true };
-                }
-
-                const response = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.id}`
-                    },
-                    body: JSON.stringify({ liked, userId: currentUser.id })
+                const { doc, updateDoc, increment: firestoreIncrement } = window.firestoreModules;
+                const db = window.firestoreDb;
+                
+                const postRef = doc(db, 'posts', postId);
+                await updateDoc(postRef, {
+                    likes: firestoreIncrement(increment),
+                    updatedAt: new Date()
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                return await response.json();
-
+                
+                console.log('いいねをFirestoreで更新:', postId, increment);
+                
             } catch (error) {
-                console.error('いいね送信エラー:', error);
-                return { success: false };
+                console.error('Firestoreいいね更新エラー:', error);
             }
         }
 
@@ -1193,10 +1251,10 @@
             switch (status) {
                 case 'connected':
                     statusDot.classList.add('connected');
-                    statusText.textContent = 'オンライン';
-                    isConnected = true;
+                    statusText.textContent = USE_FIREBASE ? 'リアルタイム同期' : 'ローカル';
+                    isConnected = USE_FIREBASE && firebaseConfigured;
                     break;
-                case 'disconnected':
+                case 'offline':
                     statusDot.classList.add('offline');
                     statusText.textContent = 'オフライン';
                     isConnected = false;
@@ -1209,67 +1267,41 @@
             }
         }
 
-        // 接続エラー処理
-        function handleConnectionError() {
-            retryCount++;
-            
-            if (retryCount <= MAX_RETRY_COUNT) {
-                showError(`サーバーに接続できません。${5 * retryCount}秒後に再試行します...`);
-                
-                setTimeout(async () => {
-                    updateConnectionStatus('connecting');
-                    try {
-                        await loadPostsFromServer();
-                        updateConnectionStatus('connected');
-                        hideError();
-                    } catch (error) {
-                        updateConnectionStatus('disconnected');
-                        handleConnectionError();
-                    }
-                }, 5000 * retryCount);
-            } else {
-                showError('サーバーに接続できません。オフラインモードで動作します。');
-            }
-        }
-
-        // 自動更新開始
-        function startAutoRefresh() {
-            autoRefreshInterval = setInterval(async () => {
-                if (isConnected && currentUser) {
-                    try {
-                        await loadPostsFromServer();
-                        renderPosts();
-                    } catch (error) {
-                        updateConnectionStatus('disconnected');
-                    }
-                }
-            }, 15000);
-        }
-
         // 手動更新
         async function refreshPosts() {
             if (!currentUser) return;
-            
-            if (!isConnected && retryCount > MAX_RETRY_COUNT) {
-                retryCount = 0;
-            }
             
             updateConnectionStatus('connecting');
             showLoading(true);
             
             try {
-                await loadPostsFromServer();
-                updateConnectionStatus('connected');
+                if (USE_FIREBASE && firebaseConfigured) {
+                    // リアルタイムリスナーで自動更新されるため、再設定
+                    if (postsListener) {
+                        postsListener();
+                    }
+                    await setupRealtimeListener();
+                    updateConnectionStatus('connected');
+                } else {
+                    await loadFromLocalStorage();
+                    updateConnectionStatus('offline');
+                }
                 hideError();
             } catch (error) {
-                updateConnectionStatus('disconnected');
-                if (posts.length === 0) {
-                    showError('サーバーに接続できません。しばらく待ってから再試行してください。');
-                }
+                updateConnectionStatus('offline');
+                showError('更新に失敗しました。');
             }
             
             renderPosts();
             showLoading(false);
+        }
+
+        // 投稿数を更新
+        function updatePostCount() {
+            const postCountElement = document.getElementById('postCount');
+            if (postCountElement) {
+                postCountElement.textContent = `${posts.length}記事`;
+            }
         }
 
         // ローディング表示制御
@@ -1394,7 +1426,6 @@
             publishBtn.textContent = '投稿中...';
             
             const postData = {
-                id: 'post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                 authorId: currentUser.id,
                 authorName: currentUser.name,
                 authorAvatar: currentUser.picture ? 'google' : currentUser.name.charAt(0),
@@ -1404,14 +1435,21 @@
                 postTiming: document.getElementById('postTiming').value,
                 description: document.getElementById('description').value,
                 images: selectedImages.map(img => img.dataUrl),
-                likes: 0,
-                date: new Date().toISOString(),
-                isNew: true
+                likes: 0
             };
             
-            const result = await submitPostToServer(postData);
-            
-            if (result.success) {
+            try {
+                if (USE_FIREBASE && firebaseConfigured) {
+                    await addPostToFirestore(postData);
+                } else {
+                    // ローカルモード
+                    postData.id = 'post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    postData.date = new Date().toISOString();
+                    posts.unshift(postData);
+                    saveToLocalStorage();
+                    renderPosts();
+                }
+                
                 // フォームリセット
                 document.getElementById('stallName').value = '';
                 document.getElementById('postTiming').value = '';
@@ -1419,13 +1457,10 @@
                 selectedImages = [];
                 updateImagePreview();
                 
-                renderPosts();
                 showTab('posts');
                 
-                if (result.offline) {
-                    showError('オフラインで投稿が保存されました。オンライン時に同期されます。');
-                }
-            } else {
+            } catch (error) {
+                console.error('投稿エラー:', error);
                 showError('投稿に失敗しました。もう一度お試しください。');
             }
             
@@ -1437,11 +1472,10 @@
         function renderPosts() {
             const articleList = document.getElementById('articleList');
             const emptyState = document.getElementById('emptyState');
-            const postCountElement = document.getElementById('postCount');
             
             if (!articleList) return;
             
-            postCountElement.textContent = `${posts.length}記事`;
+            updatePostCount();
             
             if (posts.length === 0) {
                 articleList.innerHTML = '';
@@ -1451,9 +1485,7 @@
             
             emptyState.style.display = 'none';
             
-            const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            articleList.innerHTML = sortedPosts.map(post => {
+            articleList.innerHTML = posts.map(post => {
                 const imageClass = post.images.length === 1 ? 'single' : 'multiple';
                 const avatarHtml = post.isGoogleUser && post.authorPicture
                     ? `<div class="author-avatar google-avatar"><img src="${post.authorPicture}" alt="${post.authorName}"></div>`
@@ -1469,7 +1501,6 @@
                                         ${post.authorName}
                                         ${post.isGoogleUser ? '<span class="verified-badge">認証済み</span>' : ''}
                                         ${post.isNew ? '<span class="new-badge">NEW</span>' : ''}
-                                        ${post.offline ? '<span class="new-badge" style="background: #ffa500;">オフライン</span>' : ''}
                                     </div>
                                     <div class="article-date">${formatDate(post.date)}</div>
                                 </div>
@@ -1492,7 +1523,7 @@
                         <div class="article-actions">
                             <button class="like-btn ${isLiked(post.id) ? 'liked' : ''}" 
                                     onclick="toggleLike('${post.id}')"
-                                    ${!isConnected ? 'disabled' : ''}>
+                                    ${!isConnected && !currentUser ? 'disabled' : ''}>
                                 ${isLiked(post.id) ? '❤️' : '🤍'} ${post.likes}
                             </button>
                             <button class="share-btn" onclick="shareArticle('${post.id}')">
@@ -1510,7 +1541,6 @@
                         post.isNew = false;
                     }
                 });
-                saveToLocalStorage();
             }, 3000);
         }
 
@@ -1535,22 +1565,29 @@
             const hasLiked = likedPosts.includes(postId);
             
             // UI即座更新
+            const increment = hasLiked ? -1 : 1;
+            post.likes += increment;
+            post.likes = Math.max(0, post.likes);
+            
             if (hasLiked) {
-                post.likes = Math.max(0, post.likes - 1);
                 const index = likedPosts.indexOf(postId);
                 likedPosts.splice(index, 1);
             } else {
-                post.likes += 1;
                 likedPosts.push(postId);
             }
             
             localStorage.setItem(`likedPosts_${currentUser.id}`, JSON.stringify(likedPosts));
-            saveToLocalStorage();
             renderPosts();
             
-            // サーバーに送信
-            if (isConnected) {
-                await submitLikeToServer(postId, !hasLiked);
+            // Firestoreで更新
+            try {
+                if (USE_FIREBASE && firebaseConfigured) {
+                    await updateLikeInFirestore(postId, increment);
+                } else {
+                    saveToLocalStorage();
+                }
+            } catch (error) {
+                console.error('いいね更新エラー:', error);
             }
         }
 
@@ -1584,6 +1621,8 @@
 
         // 日付フォーマット
         function formatDate(dateString) {
+            if (!dateString) return '不明';
+            
             const date = new Date(dateString);
             const now = new Date();
             const diff = now - date;
@@ -1611,8 +1650,8 @@
 
         // ページ離脱時にクリーンアップ
         window.addEventListener('beforeunload', () => {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
+            if (postsListener) {
+                postsListener();
             }
         });
     </script>
