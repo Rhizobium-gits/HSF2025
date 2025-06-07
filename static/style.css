@@ -1,7 +1,7 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #ffffff;
-    color: #000;
+    background-color: #141414;
+    color: #fff;
     margin: 0;
     padding: 0;
 }
@@ -27,9 +27,9 @@ body {
 }
 
 header {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    background: #000;
     color: #fff;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #333;
     padding: 10px;
     display: flex;
     justify-content: space-between;
@@ -60,18 +60,18 @@ form.post-form input[type="file"] {
 button {
     padding: 8px 12px;
     border: none;
-    background-color: #000;
+    background-color: #fe2c55;
     color: white;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #333;
+    background-color: #ff567c;
 }
 
 .post {
-    background-color: #fff;
-    border: 1px solid #ddd;
+    background-color: #1e1e1e;
+    border: 1px solid #333;
     border-radius: 4px;
     padding: 10px 15px;
     margin-bottom: 15px;
@@ -82,12 +82,14 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    font-size: 18px;
 }
 
 .post img {
     max-width: 100%;
     border-radius: 4px;
     margin-top: 8px;
+    object-fit: cover;
 }
 
 .bottom-nav {
@@ -97,21 +99,34 @@ button:hover {
     transform: translateX(-50%);
     width: 100%;
     max-width: 375px;
-    height: 50px;
-    background: #fff;
-    border-top: 1px solid #ddd;
+    height: 60px;
+    background: #000;
+    border-top: 1px solid #333;
     display: flex;
 }
 
 .bottom-nav a {
     flex: 1;
     text-align: center;
-    line-height: 50px;
+    line-height: 60px;
     text-decoration: none;
-    color: #000;
-    font-size: 16px;
+    color: #fff;
+    font-size: 20px;
+    transition: color 0.2s;
+}
+.bottom-nav a:hover {
+    color: #fe2c55;
 }
 
 .bottom-nav a.active {
+    color: #fe2c55;
     font-weight: bold;
+}
+
+a {
+    color: #fe2c55;
+}
+
+a:hover {
+    text-decoration: underline;
 }

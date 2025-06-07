@@ -8,7 +8,7 @@
 <body>
 <div class="container">
     <header>
-        <h1>HSF SNS</h1>
+        <h1 style="color:#fe2c55">HSF SNS</h1>
         {% if user %}
         <div class="user-info">{{ user['name'] }} (<a href="/logout">logout</a>)</div>
         {% endif %}
@@ -17,9 +17,9 @@
         {% block content %}{% endblock %}
     </div>
     <nav class="bottom-nav">
-        <a href="/post"{% if active == 'post' %} class="active"{% endif %}>📝 投稿</a>
-        <a href="/timeline"{% if active == 'timeline' %} class="active"{% endif %}>🏠 タイムライン</a>
-        <a href="/profile"{% if active == 'profile' %} class="active"{% endif %}>👤 プロフィール</a>
+        <a href="/timeline"{% if active == 'timeline' %} class="active"{% endif %}>🏠</a>
+        <a href="/post"{% if active == 'post' %} class="active"{% endif %}>➕</a>
+        <a href="/profile"{% if active == 'profile' %} class="active"{% endif %}>👤</a>
     </nav>
 </div>
 </body>
