@@ -4,17 +4,17 @@
 This repository holds a prototype of an SNS for a school festival. Accounts are associated with Google using OAuth authentication. Users are able to post text and images and other users can like those posts.
 
 ## Implementation Plan
-1. **Framework**: Build the server with **FastAPI**. Static pages and templates are served directly by Python, so the front‑end can be implemented with standard HTML templates.
+1. **Framework**: Build the server with **FastAPI**. HTML templates and static files are served directly from Python for a lightweight front end.
 2. **Google OAuth**: Use **Authlib** to integrate Google login. Successful authentication stores basic user information in the session.
-3. **Data Model**: For the prototype, posts and likes are stored in-memory. Each post contains an id, author data, text, optional image URL, and a like counter.
+3. **Data Model**: Posts and likes are stored in memory. Each post contains an id, author name, text, optional image URL, and a like counter.
 4. **Endpoints**:
    - `/` – Home page showing posts.
-   - `/login` – Redirects the user to Google for authentication.
-   - `/auth` – OAuth callback. After verification the user is returned to `/`.
+   - `/login` – Redirects to Google for authentication.
+   - `/auth` – OAuth callback; after verification the user is returned home.
    - `/logout` – Clears the session.
-   - `/posts` – API for creating and listing posts.
-   - `/posts/{post_id}/like` – Toggles a like for the authenticated user.
-5. **Front-end**: The initial UI uses simple Jinja2 templates rendered by FastAPI. JavaScript is kept minimal for posting and liking actions.
-6. **Next Steps**: Later iterations may add a database (SQLAlchemy + Alembic), improved API structure, and a React/Vite front-end.
+   - `/posts` – Create a new post.
+   - `/posts/{post_id}/like` – Like a post.
+5. **Front-end**: Jinja2 templates render the pages. A small stylesheet under `static/style.css` adds a simple card layout and form styling for a cleaner look.
+6. **Next Steps**: Later iterations may add persistent storage (SQLAlchemy + PostgreSQL) and a full React/Vite interface.
 
-Run `uvicorn main:app --reload` to start the development server after installing dependencies from `requirements.txt`.
+Run `uvicorn main:app --reload` after installing dependencies from `requirements.txt`.

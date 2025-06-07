@@ -3,30 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title>Festival SNS</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
 </head>
 <body>
-{% if user %}
-    <p>Logged in as {{ user['name'] }} (<a href="/logout">logout</a>)</p>
-    <form action="/posts" method="post" enctype="multipart/form-data">
+<div class="container">
+    <header>
+        <h1>Festival SNS</h1>
+        {% if user %}
+        <div>Logged in as {{ user['name'] }} (<a href="/logout">logout</a>)</div>
+        {% endif %}
+    </header>
+
+    {% if user %}
+    <form class="post-form" action="/posts" method="post" enctype="multipart/form-data">
         <input type="text" name="text" placeholder="Write something" required>
         <input type="file" name="image">
         <button type="submit">Post</button>
     </form>
-{% else %}
-    <a href="/login">Login with Google</a>
-{% endif %}
-<hr>
-{% for post in posts %}
-<div>
-    <p><strong>{{ post.author }}</strong>: {{ post.text }}</p>
-    {% if post.image_url %}
-    <img src="{{ post.image_url }}" alt="image" width="200">
+    {% else %}
+    <p><a href="/login">Login with Google</a></p>
     {% endif %}
-    <form action="/posts/{{ post.id }}/like" method="post" style="display:inline;">
-        <button type="submit">Like ({{ post.likes }})</button>
-    </form>
+
+    {% for post in posts %}
+    <div class="post">
+        <p><strong>{{ post.author }}</strong></p>
+        <p>{{ post.text }}</p>
+        {% if post.image_url %}
+        <img src="{{ post.image_url }}" alt="image">
+        {% endif %}
+        <form action="/posts/{{ post.id }}/like" method="post" style="display:inline;">
+            <button type="submit">Like ({{ post.likes }})</button>
+        </form>
+    </div>
+    {% endfor %}
 </div>
-<hr>
-{% endfor %}
 </body>
 </html>
