@@ -43,12 +43,17 @@
             color: #1a1a1a;
         }
         
-        .user-info {
+        .user-section {
             display: flex;
             align-items: center;
             gap: 12px;
             font-size: 13px;
-            color: #8e8e8e;
+        }
+        
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 8px;
         }
         
         .user-avatar {
@@ -67,10 +72,10 @@
             background: none;
             border: 1px solid #e6e6e6;
             color: #8e8e8e;
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 4px 8px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             transition: all 0.2s;
         }
         
@@ -83,7 +88,6 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 13px;
             color: #8e8e8e;
         }
         
@@ -141,71 +145,49 @@
             padding: 40px 20px;
         }
         
-        /* ログイン画面のスタイル */
-        .login-screen {
-            display: block;
-            text-align: center;
-            min-height: 60vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .login-card {
+        .login-section {
             background: #fff;
             border: 1px solid #e6e6e6;
             border-radius: 12px;
-            padding: 48px 40px;
+            padding: 48px 32px;
+            text-align: center;
+            margin: 40px auto;
             max-width: 400px;
-            width: 100%;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         
-        .login-title {
-            font-size: 28px;
+        .login-section h2 {
+            font-size: 24px;
             font-weight: 600;
             color: #1a1a1a;
             margin-bottom: 12px;
         }
         
-        .login-subtitle {
-            font-size: 16px;
+        .login-section p {
             color: #8e8e8e;
             margin-bottom: 32px;
             line-height: 1.5;
         }
         
         .google-signin-container {
+            display: flex;
+            justify-content: center;
             margin-bottom: 24px;
         }
         
-        .demo-login-section {
-            border-top: 1px solid #e6e6e6;
-            padding-top: 24px;
-            margin-top: 24px;
-        }
-        
-        .demo-login-title {
-            font-size: 14px;
-            color: #8e8e8e;
-            margin-bottom: 16px;
-        }
-        
         .demo-login-btn {
-            width: 100%;
-            background: none;
+            background: #f8f9fa;
             border: 1px solid #e6e6e6;
-            color: #8e8e8e;
-            padding: 12px;
+            color: #6c757d;
+            padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.2s;
         }
         
         .demo-login-btn:hover {
-            border-color: #00d084;
-            color: #00d084;
+            background: #e9ecef;
         }
         
         .main-content {
@@ -330,7 +312,7 @@
             border-color: #00d084;
         }
         
-        .form-group input:read-only {
+        .form-group input:disabled {
             background: #f8f9fa;
             color: #6c757d;
         }
@@ -488,10 +470,13 @@
             font-size: 14px;
         }
         
-        .author-avatar img {
+        .google-avatar {
+            background: none !important;
+        }
+        
+        .google-avatar img {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
             object-fit: cover;
         }
         
@@ -505,6 +490,16 @@
             color: #1a1a1a;
             display: flex;
             align-items: center;
+        }
+        
+        .verified-badge {
+            background: #4285f4;
+            color: white;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            margin-left: 6px;
         }
         
         .article-date {
@@ -708,8 +703,9 @@
                 padding: 20px 16px;
             }
             
-            .login-card {
+            .login-section {
                 padding: 32px 24px;
+                margin: 20px auto;
             }
             
             .welcome-section h1 {
@@ -742,79 +738,65 @@
                 margin-right: 24px;
             }
             
-            .header-content {
-                flex-wrap: wrap;
-                gap: 12px;
-            }
-            
-            .user-info {
-                order: 3;
-                width: 100%;
-                justify-content: space-between;
+            .user-section {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- ログイン画面 -->
-    <div class="login-screen" id="loginScreen">
-        <div class="login-card">
-            <h1 class="login-title">🏮 Hvillage夏祭り</h1>
-            <p class="login-subtitle">
-                夏祭りの屋台記録を投稿・共有しよう<br>
-                Googleアカウントでログインしてください
-            </p>
-            
-            <div class="google-signin-container">
-                <div id="g_id_onload"
-                     data-client_id="263100277403-gj64v33k5sp9u1d5cne1fevv8tf57sg3.apps.googleusercontent.com"
-                     data-context="signin"
-                     data-ux_mode="popup"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="false">
-                </div>
-                
-                <div class="g_id_signin"
-                     data-type="standard"
-                     data-shape="rectangular"
-                     data-theme="outline"
-                     data-text="signin_with"
-                     data-size="large"
-                     data-logo_alignment="left"
-                     data-width="300">
-                </div>
-            </div>
-            
-            <div class="demo-login-section">
-                <div class="demo-login-title">デモ用（開発・テスト用）</div>
-                <button class="demo-login-btn" onclick="demoLogin()">
-                    デモアカウントでログイン
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- ヘッダー -->
-    <header class="header" id="mainHeader" style="display: none;">
+    <header class="header">
         <div class="header-content">
             <div class="logo">🏮 Hvillage夏祭り</div>
-            
-            <div class="user-info" id="userInfo">
-                <img class="user-avatar" id="userAvatar" src="" alt="アバター">
-                <span class="user-name" id="userName"></span>
-                <button class="logout-btn" onclick="logout()">ログアウト</button>
-            </div>
-            
-            <div class="status-info">
-                <div class="connection-status">
-                    <div class="status-dot" id="statusDot"></div>
-                    <span id="statusText">接続中...</span>
+            <div class="user-section">
+                <div class="user-info" id="userInfo">
+                    <img class="user-avatar" id="userAvatar" src="" alt="ユーザーアバター">
+                    <span class="user-name" id="userName"></span>
+                    <button class="logout-btn" onclick="logout()">ログアウト</button>
                 </div>
-                <button class="refresh-btn" id="refreshBtn" onclick="refreshPosts()">更新</button>
-                <span id="postCount">0記事</span>
+                <div class="status-info">
+                    <div class="connection-status">
+                        <div class="status-dot" id="statusDot"></div>
+                        <span id="statusText">接続中...</span>
+                    </div>
+                    <button class="refresh-btn" id="refreshBtn" onclick="refreshPosts()">更新</button>
+                    <span id="postCount">0記事</span>
+                </div>
             </div>
         </div>
     </header>
+
+    <!-- ログイン画面 -->
+    <div class="login-section" id="loginSection">
+        <h2>🎌 Hvillage夏祭りへようこそ</h2>
+        <p>Googleアカウントでログインして、<br>夏祭りの屋台記録を投稿・共有しましょう</p>
+        
+        <div id="g_id_onload"
+             data-client_id="263100277403-fobgd6h9ctvk79ooqi7rhps6fv2tfrcn.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        
+        <div class="google-signin-container">
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left">
+            </div>
+        </div>
+        
+        <button class="demo-login-btn" onclick="demoLogin()">
+            デモログイン（テスト用）
+        </button>
+    </div>
 
     <!-- メインコンテンツ -->
     <div class="container">
@@ -859,13 +841,13 @@
                     <div class="form-title">新しい記事を書く</div>
                     
                     <div class="notice">
-                        ログインしたGoogleアカウントの情報で投稿されます。投稿は即座にサーバーに保存され、他のユーザーと共有されます。
+                        ログインユーザーとして投稿されます。投稿は即座にサーバーに保存され、他のユーザーと共有されます。
                     </div>
                     
                     <form id="articleForm">
                         <div class="form-group">
                             <label for="authorName">投稿者名</label>
-                            <input type="text" id="authorName" placeholder="Googleアカウントから自動入力" readonly>
+                            <input type="text" id="authorName" placeholder="Googleアカウント名が自動入力されます" disabled>
                         </div>
                         
                         <div class="form-group">
@@ -924,35 +906,57 @@
         let retryCount = 0;
         const MAX_RETRY_COUNT = 5;
 
-        // Google認証設定
-        const GOOGLE_CLIENT_ID = "263100277403-gj64v33k5sp9u1d5cne1fevv8tf57sg3.apps.googleusercontent.com";
-
         // API設定
         const API_BASE_URL = 'https://api.hvillage-festival.example.com';
         const USE_DEMO_MODE = true;
 
+        // Google OAuth設定
+        const GOOGLE_CLIENT_ID = '263100277403-fobgd6h9ctvk79ooqi7rhps6fv2tfrcn.apps.googleusercontent.com';
+
         // ページ読み込み時の初期化
         window.onload = function() {
             setupImageUpload();
-            checkExistingLogin();
+            checkLoginStatus();
         };
 
-        // 既存のログインをチェック
-        function checkExistingLogin() {
+        // ログイン状態をチェック
+        function checkLoginStatus() {
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) {
                 try {
                     currentUser = JSON.parse(savedUser);
                     showMainContent();
                     initializeApp();
-                    startAutoRefresh();
                 } catch (e) {
                     localStorage.removeItem('currentUser');
-                    showLoginScreen();
+                    showLoginSection();
                 }
             } else {
-                showLoginScreen();
+                showLoginSection();
             }
+        }
+
+        // ログイン画面を表示
+        function showLoginSection() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'none';
+        }
+
+        // メインコンテンツを表示
+        function showMainContent() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'flex';
+            
+            // ユーザー情報を表示
+            document.getElementById('userAvatar').src = currentUser.picture;
+            document.getElementById('userName').textContent = currentUser.name;
+            
+            // フォームにユーザー名を自動入力
+            document.getElementById('authorName').value = currentUser.name;
+            
+            startAutoRefresh();
         }
 
         // Google認証コールバック
@@ -965,20 +969,16 @@
                     name: payload.name,
                     email: payload.email,
                     picture: payload.picture,
-                    email_verified: payload.email_verified
+                    emailVerified: payload.email_verified
                 };
-
-                // ユーザー情報を保存
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 
-                // メインコンテンツを表示
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 showMainContent();
                 initializeApp();
-                startAutoRefresh();
                 
             } catch (error) {
-                console.error('認証エラー:', error);
-                showError('ログインに失敗しました。もう一度お試しください。');
+                console.error('Google認証エラー:', error);
+                alert('ログインに失敗しました。もう一度お試しください。');
             }
         }
 
@@ -989,13 +989,30 @@
                 name: 'デモユーザー',
                 email: 'demo@hvillage.com',
                 picture: 'https://via.placeholder.com/32/00d084/ffffff?text=Demo',
-                email_verified: true
+                emailVerified: true,
+                isDemo: true
             };
-
+            
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             showMainContent();
             initializeApp();
-            startAutoRefresh();
+        }
+
+        // ログアウト
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            // Google Sign-In をリセット
+            if (typeof google !== 'undefined' && google.accounts) {
+                google.accounts.id.disableAutoSelect();
+            }
+            
+            showLoginSection();
         }
 
         // JWTトークンをパース
@@ -1006,48 +1023,6 @@
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
             return JSON.parse(jsonPayload);
-        }
-
-        // ログイン画面を表示
-        function showLoginScreen() {
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('mainHeader').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'none';
-        }
-
-        // メインコンテンツを表示
-        function showMainContent() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainHeader').style.display = 'block';
-            document.getElementById('mainContent').style.display = 'block';
-            
-            // ユーザー情報を表示
-            document.getElementById('userAvatar').src = currentUser.picture;
-            document.getElementById('userName').textContent = currentUser.name;
-            
-            // フォームにユーザー名を自動入力
-            document.getElementById('authorName').value = currentUser.name;
-        }
-
-        // ログアウト
-        function logout() {
-            // Google Sign-Inをリセット
-            if (typeof google !== 'undefined' && google.accounts) {
-                google.accounts.id.disableAutoSelect();
-            }
-            
-            // ローカルデータをクリア
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            
-            // 自動更新を停止
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-            }
-            
-            // ログイン画面に戻る
-            showLoginScreen();
         }
 
         // アプリケーション初期化
@@ -1083,7 +1058,7 @@
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.id}` // 簡易認証
+                        'Authorization': `Bearer ${currentUser.id}`
                     }
                 });
 
@@ -1161,6 +1136,34 @@
             }
         }
 
+        // いいねをサーバーに送信
+        async function submitLikeToServer(postId, liked) {
+            try {
+                if (USE_DEMO_MODE) {
+                    return { success: true };
+                }
+
+                const response = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.id}`
+                    },
+                    body: JSON.stringify({ liked, userId: currentUser.id })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return await response.json();
+
+            } catch (error) {
+                console.error('いいね送信エラー:', error);
+                return { success: false };
+            }
+        }
+
         // ローカルストレージから読み込み
         async function loadFromLocalStorage() {
             const saved = localStorage.getItem('hvillage_posts');
@@ -1232,7 +1235,7 @@
         // 自動更新開始
         function startAutoRefresh() {
             autoRefreshInterval = setInterval(async () => {
-                if (isConnected) {
+                if (isConnected && currentUser) {
                     try {
                         await loadPostsFromServer();
                         renderPosts();
@@ -1245,6 +1248,8 @@
 
         // 手動更新
         async function refreshPosts() {
+            if (!currentUser) return;
+            
             if (!isConnected && retryCount > MAX_RETRY_COUNT) {
                 retryCount = 0;
             }
@@ -1269,19 +1274,27 @@
 
         // ローディング表示制御
         function showLoading(show) {
-            document.getElementById('loadingPosts').style.display = show ? 'block' : 'none';
+            const loadingElement = document.getElementById('loadingPosts');
+            if (loadingElement) {
+                loadingElement.style.display = show ? 'block' : 'none';
+            }
         }
 
         // エラーメッセージ表示
         function showError(message) {
             const errorElement = document.getElementById('errorMessage');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
         }
 
         // エラーメッセージ非表示
         function hideError() {
-            document.getElementById('errorMessage').style.display = 'none';
+            const errorElement = document.getElementById('errorMessage');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
         }
 
         // タブ切り替え
@@ -1367,7 +1380,7 @@
             e.preventDefault();
             
             if (!currentUser) {
-                showError('ログインが必要です。');
+                alert('ログインが必要です。');
                 return;
             }
             
@@ -1384,8 +1397,9 @@
                 id: 'post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                 authorId: currentUser.id,
                 authorName: currentUser.name,
-                authorEmail: currentUser.email,
+                authorAvatar: currentUser.picture ? 'google' : currentUser.name.charAt(0),
                 authorPicture: currentUser.picture,
+                isGoogleUser: !currentUser.isDemo,
                 stallName: document.getElementById('stallName').value,
                 postTiming: document.getElementById('postTiming').value,
                 description: document.getElementById('description').value,
@@ -1398,8 +1412,10 @@
             const result = await submitPostToServer(postData);
             
             if (result.success) {
-                document.getElementById('articleForm').reset();
-                document.getElementById('authorName').value = currentUser.name; // 名前を再設定
+                // フォームリセット
+                document.getElementById('stallName').value = '';
+                document.getElementById('postTiming').value = '';
+                document.getElementById('description').value = '';
                 selectedImages = [];
                 updateImagePreview();
                 
@@ -1423,6 +1439,8 @@
             const emptyState = document.getElementById('emptyState');
             const postCountElement = document.getElementById('postCount');
             
+            if (!articleList) return;
+            
             postCountElement.textContent = `${posts.length}記事`;
             
             if (posts.length === 0) {
@@ -1437,18 +1455,19 @@
             
             articleList.innerHTML = sortedPosts.map(post => {
                 const imageClass = post.images.length === 1 ? 'single' : 'multiple';
-                const authorAvatar = post.authorPicture ? 
-                    `<img src="${post.authorPicture}" alt="${post.authorName}">` : 
-                    post.authorName.charAt(0);
+                const avatarHtml = post.isGoogleUser && post.authorPicture
+                    ? `<div class="author-avatar google-avatar"><img src="${post.authorPicture}" alt="${post.authorName}"></div>`
+                    : `<div class="author-avatar">${post.authorAvatar}</div>`;
                 
                 return `
                     <article class="article ${post.isNew ? 'new-post' : ''}">
                         <div class="article-header">
                             <div class="article-meta">
-                                <div class="author-avatar">${authorAvatar}</div>
+                                ${avatarHtml}
                                 <div class="author-info">
                                     <div class="author-name">
                                         ${post.authorName}
+                                        ${post.isGoogleUser ? '<span class="verified-badge">認証済み</span>' : ''}
                                         ${post.isNew ? '<span class="new-badge">NEW</span>' : ''}
                                         ${post.offline ? '<span class="new-badge" style="background: #ffa500;">オフライン</span>' : ''}
                                     </div>
@@ -1484,6 +1503,7 @@
                 `;
             }).join('');
             
+            // 3秒後にNEWバッジを削除
             setTimeout(() => {
                 posts.forEach(post => {
                     if (post.isNew) {
@@ -1496,23 +1516,25 @@
 
         // いいね状態を確認
         function isLiked(postId) {
-            const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
+            if (!currentUser) return false;
+            const likedPosts = JSON.parse(localStorage.getItem(`likedPosts_${currentUser.id}`) || '[]');
             return likedPosts.includes(postId);
         }
 
         // いいね切り替え
         async function toggleLike(postId) {
             if (!currentUser) {
-                showError('いいねするにはログインが必要です。');
+                alert('いいねするにはログインが必要です。');
                 return;
             }
             
             const post = posts.find(p => p.id === postId);
             if (!post) return;
             
-            const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
+            const likedPosts = JSON.parse(localStorage.getItem(`likedPosts_${currentUser.id}`) || '[]');
             const hasLiked = likedPosts.includes(postId);
             
+            // UI即座更新
             if (hasLiked) {
                 post.likes = Math.max(0, post.likes - 1);
                 const index = likedPosts.indexOf(postId);
@@ -1522,9 +1544,14 @@
                 likedPosts.push(postId);
             }
             
-            localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+            localStorage.setItem(`likedPosts_${currentUser.id}`, JSON.stringify(likedPosts));
             saveToLocalStorage();
             renderPosts();
+            
+            // サーバーに送信
+            if (isConnected) {
+                await submitLikeToServer(postId, !hasLiked);
+            }
         }
 
         // 記事をシェア
