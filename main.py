@@ -55,7 +55,12 @@ async def login(request: Request):
 @app.get('/auth')
 async def auth(request: Request):
     token = await oauth.google.authorize_access_token(request)
-    user = await oauth.google.parse_id_token(request, token)
+    try:
+        user = await oauth.google.parse_id_token(request, token)
+    except Exception:
+        # Fallback in case id_token is missing
+        resp = await oauth.google.get('userinfo', token=token)
+        user = resp.json()
     request.session['user'] = {'id': user['sub'], 'name': user['name']}
     return RedirectResponse('/')
 
