@@ -20,13 +20,18 @@ This repository holds a prototype of an SNS for a school festival. Accounts are 
 5. **Front-end**: Jinja2 templates render the pages. A small stylesheet under `static/style.css` adds a simple card layout and form styling for a cleaner look.
 6. **Next Steps**: Later iterations may add persistent storage (SQLAlchemy + PostgreSQL) and a full React/Vite interface.
 
-Set the following environment variables before running the server:
+Copy `.env.example` to `.env` and fill in your credentials before running the
+server:
 ```
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 SESSION_SECRET=some-random-string
 ```
 
-Run `uvicorn main:app --reload` after installing dependencies from `requirements.txt`.
+Install dependencies with `pip install -r requirements.txt` and then run
+`uvicorn main:app --reload`.
+
+If OAuth fails during callback, the error page will display details instead of a
+server crash.
 
 The unused `index.html` from an earlier prototype was removed to avoid confusion.

@@ -54,7 +54,15 @@ async def login(request: Request):
 
 @app.get('/auth')
 async def auth(request: Request):
-    token = await oauth.google.authorize_access_token(request)
+    try:
+        token = await oauth.google.authorize_access_token(request)
+    except Exception as e:
+        # Most likely an invalid grant or redirect mismatch
+        return templates.TemplateResponse(
+            'error.html',
+            {'request': request, 'error': f"OAuth failed: {e}"},
+            status_code=400,
+        )
     try:
         user = await oauth.google.parse_id_token(request, token)
     except Exception:
