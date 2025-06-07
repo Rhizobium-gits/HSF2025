@@ -32,6 +32,7 @@ class Post(BaseModel):
     text: str
     image_url: Optional[str] = None
     likes: int = 0
+    liked_by: List[str] = []
 
 posts: List[Post] = []
 
@@ -104,6 +105,11 @@ async def like_post(request: Request, post_id: str):
         return RedirectResponse('/login')
     for p in posts:
         if p.id == post_id:
-            p.likes += 1
+            if user['id'] in p.liked_by:
+                p.liked_by.remove(user['id'])
+                p.likes -= 1
+            else:
+                p.liked_by.append(user['id'])
+                p.likes += 1
             break
     return RedirectResponse('/', status_code=303)

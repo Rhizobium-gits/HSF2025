@@ -32,7 +32,11 @@
         <img src="{{ post.image_url }}" alt="image">
         {% endif %}
         <form action="/posts/{{ post.id }}/like" method="post" style="display:inline;">
+            {% if user and (user['id'] in post.liked_by) %}
+            <button type="submit">Unlike ({{ post.likes }})</button>
+            {% else %}
             <button type="submit">Like ({{ post.likes }})</button>
+            {% endif %}
         </form>
     </div>
     {% endfor %}
