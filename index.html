@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hvillage夏祭り投稿</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e6e6e6;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #8e8e8e;
+        }
+        
+        .refresh-btn {
+            background: none;
+            border: 1px solid #e6e6e6;
+            color: #8e8e8e;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .refresh-btn:hover {
+            border-color: #00d084;
+            color: #00d084;
+        }
+        
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .welcome-section h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+        
+        .welcome-section p {
+            font-size: 16px;
+            color: #8e8e8e;
+            margin-bottom: 8px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e6e6e6;
+            margin-bottom: 40px;
+        }
+        
+        .tab {
+            background: none;
+            border: none;
+            padding: 16px 0;
+            margin-right: 32px;
+            font-size: 15px;
+            color: #8e8e8e;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+        
+        .tab.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #00d084;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .write-form {
+            background: #fff;
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        
+        .form-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e6e6e6;
+            border-radius: 6px;
+            font-size: 15px;
+            color: #1a1a1a;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #00d084;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+        
+        .image-upload {
+            border: 2px dashed #e6e6e6;
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+        
+        .image-upload:hover {
+            border-color: #00d084;
+            background: #f8fff8;
+        }
+        
+        .image-upload-text {
+            font-size: 14px;
+            color: #8e8e8e;
+        }
+        
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .image-preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-image {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .publish-btn {
+            width: 100%;
+            background: #00d084;
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .publish-btn:hover {
+            background: #00b872;
+        }
+        
+        .publish-btn:disabled {
+            background: #e6e6e6;
+            color: #8e8e8e;
+            cursor: not-allowed;
+        }
+        
+        .article-list {
+            space-y: 24px;
+        }
+        
+        .article {
+            background: #fff;
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            transition: box-shadow 0.2s;
+        }
+        
+        .article:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .article-header {
+            padding: 24px 24px 0 24px;
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d084, #00b872);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .author-info {
+            flex: 1;
+        }
+        
+        .author-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+        
+        .article-date {
+            font-size: 12px;
+            color: #8e8e8e;
+        }
+        
+        .stall-badge {
+            background: #f0f8ff;
+            color: #0066cc;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .article-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .article-subtitle {
+            font-size: 14px;
+            color: #8e8e8e;
+            margin-bottom: 16px;
+        }
+        
+        .article-images {
+            margin: 16px 0;
+        }
+        
+        .article-images.single img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        .article-images.multiple {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+        }
+        
+        .article-images.multiple img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .article-content {
+            padding: 0 24px 24px 24px;
+        }
+        
+        .article-description {
+            font-size: 15px;
+            color: #1a1a1a;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .article-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-top: 1px solid #f5f5f5;
+            background: #fafafa;
+        }
+        
+        .like-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: #8e8e8e;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .like-btn:hover {
+            background: #f5f5f5;
+        }
+        
+        .like-btn.liked {
+            color: #ff6b6b;
+        }
+        
+        .share-btn {
+            background: none;
+            border: 1px solid #e6e6e6;
+            color: #8e8e8e;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .share-btn:hover {
+            border-color: #00d084;
+            color: #00d084;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #8e8e8e;
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .notice {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .welcome-section h1 {
+                font-size: 28px;
+            }
+            
+            .write-form {
+                padding: 24px 20px;
+            }
+            
+            .article-header {
+                padding: 20px 20px 0 20px;
+            }
+            
+            .article-content {
+                padding: 0 20px 20px 20px;
+            }
+            
+            .article-actions {
+                padding: 12px 20px;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .tab {
+                margin-right: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🏮 Hvillage夏祭り</div>
+            <div class="status-info">
+                <button class="refresh-btn" onclick="refreshPosts()">更新</button>
+                <span id="postCount">0記事</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <!-- ウェルカムセクション -->
+        <div class="welcome-section">
+            <h1>夏祭り屋台記録</h1>
+            <p>Hvillageの夏祭りで出店する屋台の記録を投稿・共有しましょう</p>
+            <p>準備から片付けまで、みんなの思い出を残していこう</p>
+        </div>
+
+        <!-- タブナビゲーション -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('posts')">記事を読む</button>
+            <button class="tab" onclick="showTab('write')">記事を書く</button>
+        </div>
+
+        <!-- 記事一覧タブ -->
+        <div id="posts-tab" class="tab-content active">
+            <div class="article-list" id="articleList">
+                <!-- 記事がここに表示される -->
+            </div>
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <h3>まだ記事がありません</h3>
+                <p>最初の記事を投稿してみましょう</p>
+            </div>
+        </div>
+
+        <!-- 記事作成タブ -->
+        <div id="write-tab" class="tab-content">
+            <div class="write-form">
+                <div class="form-title">新しい記事を書く</div>
+                
+                <div class="notice">
+                    匿名で投稿できます。ニックネームや屋台名は自由に設定してください。
+                </div>
+                
+                <form id="articleForm">
+                    <div class="form-group">
+                        <label for="authorName">投稿者名</label>
+                        <input type="text" id="authorName" placeholder="ニックネームを入力" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stallName">屋台名</label>
+                        <input type="text" id="stallName" placeholder="屋台の名前を入力" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postTiming">投稿タイミング</label>
+                        <select id="postTiming" required>
+                            <option value="">選択してください</option>
+                            <option value="準備中">準備中</option>
+                            <option value="開催中">開催中</option>
+                            <option value="片付け中">片付け中</option>
+                            <option value="完了">完了</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">記事本文</label>
+                        <textarea id="description" placeholder="屋台の様子や感想、工夫した点などを書いてください..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>写真</label>
+                        <div class="image-upload" id="imageUpload">
+                            <div class="image-upload-text">📷 写真をアップロード</div>
+                            <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+                        </div>
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
+                    
+                    <button type="submit" class="publish-btn" id="publishBtn">
+                        記事を公開
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 画像モーダル -->
+    <div class="modal" id="imageModal" onclick="closeModal()">
+        <div class="close-modal" onclick="closeModal()">&times;</div>
+        <img id="modalImage" src="" alt="拡大画像">
+    </div>
+
+    <script>
+        // アプリケーションの状態管理
+        let posts = [];
+        let selectedImages = [];
+
+        // ページ読み込み時の初期化
+        window.onload = function() {
+            setupImageUpload();
+            loadPosts();
+            renderPosts();
+        };
+
+        // ローカルストレージから投稿を読み込み
+        function loadPosts() {
+            const saved = localStorage.getItem('hvillage_posts');
+            if (saved) {
+                try {
+                    posts = JSON.parse(saved);
+                } catch (e) {
+                    posts = [];
+                }
+            }
+        }
+
+        // ローカルストレージに投稿を保存
+        function savePosts() {
+            localStorage.setItem('hvillage_posts', JSON.stringify(posts));
+        }
+
+        // 投稿を手動更新
+        function refreshPosts() {
+            loadPosts();
+            renderPosts();
+        }
+
+        // タブ切り替え
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // 画像アップロード設定
+        function setupImageUpload() {
+            const imageUpload = document.getElementById('imageUpload');
+            const imageInput = document.getElementById('imageInput');
+            
+            imageUpload.addEventListener('click', () => imageInput.click());
+            
+            imageUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imageUpload.style.borderColor = '#00d084';
+                imageUpload.style.background = '#f8fff8';
+            });
+            
+            imageUpload.addEventListener('dragleave', () => {
+                imageUpload.style.borderColor = '#e6e6e6';
+                imageUpload.style.background = '#fafafa';
+            });
+            
+            imageUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imageUpload.style.borderColor = '#e6e6e6';
+                imageUpload.style.background = '#fafafa';
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            imageInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        // ファイル処理
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        selectedImages.push({
+                            file: file,
+                            dataUrl: e.target.result
+                        });
+                        updateImagePreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // 画像プレビュー更新
+        function updateImagePreview() {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            
+            selectedImages.forEach((image, index) => {
+                const div = document.createElement('div');
+                div.className = 'image-preview-item';
+                div.innerHTML = `
+                    <img src="${image.dataUrl}" alt="プレビュー">
+                    <button type="button" class="remove-image" onclick="removeImage(${index})">&times;</button>
+                `;
+                preview.appendChild(div);
+            });
+        }
+
+        // 画像削除
+        function removeImage(index) {
+            selectedImages.splice(index, 1);
+            updateImagePreview();
+        }
+
+        // ユーザーアバターを生成
+        function generateAvatar(name) {
+            return name.charAt(0);
+        }
+
+        // 記事フォーム送信
+        document.getElementById('articleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (selectedImages.length === 0) {
+                alert('少なくとも1枚の写真を選択してください。');
+                return;
+            }
+            
+            const publishBtn = document.getElementById('publishBtn');
+            publishBtn.disabled = true;
+            publishBtn.textContent = '公開中...';
+            
+            const authorName = document.getElementById('authorName').value;
+            
+            const postData = {
+                id: 'post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                authorName: authorName,
+                authorAvatar: generateAvatar(authorName),
+                stallName: document.getElementById('stallName').value,
+                postTiming: document.getElementById('postTiming').value,
+                description: document.getElementById('description').value,
+                images: selectedImages.map(img => img.dataUrl),
+                likes: 0,
+                date: new Date().toISOString()
+            };
+            
+            // 投稿を追加
+            posts.unshift(postData);
+            savePosts();
+            
+            // フォームリセット
+            document.getElementById('articleForm').reset();
+            selectedImages = [];
+            updateImagePreview();
+            
+            renderPosts();
+            showTab('posts');
+            
+            publishBtn.disabled = false;
+            publishBtn.textContent = '記事を公開';
+        });
+
+        // 記事を表示
+        function renderPosts() {
+            const articleList = document.getElementById('articleList');
+            const emptyState = document.getElementById('emptyState');
+            const postCountElement = document.getElementById('postCount');
+            
+            postCountElement.textContent = `${posts.length}記事`;
+            
+            if (posts.length === 0) {
+                articleList.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            articleList.innerHTML = sortedPosts.map(post => {
+                const imageClass = post.images.length === 1 ? 'single' : 'multiple';
+                return `
+                    <article class="article">
+                        <div class="article-header">
+                            <div class="article-meta">
+                                <div class="author-avatar">${post.authorAvatar}</div>
+                                <div class="author-info">
+                                    <div class="author-name">${post.authorName}</div>
+                                    <div class="article-date">${formatDate(post.date)}</div>
+                                </div>
+                                <div class="stall-badge">${post.postTiming}</div>
+                            </div>
+                            <h2 class="article-title">${post.stallName}</h2>
+                            <div class="article-subtitle">屋台運営記録</div>
+                        </div>
+                        
+                        <div class="article-content">
+                            <div class="article-images ${imageClass}">
+                                ${post.images.map(img => `
+                                    <img src="${img}" alt="屋台の写真" onclick="openModal('${img}')">
+                                `).join('')}
+                            </div>
+                            
+                            <div class="article-description">${post.description}</div>
+                        </div>
+                        
+                        <div class="article-actions">
+                            <button class="like-btn ${isLiked(post.id) ? 'liked' : ''}" 
+                                    onclick="toggleLike('${post.id}')">
+                                ${isLiked(post.id) ? '❤️' : '🤍'} ${post.likes}
+                            </button>
+                            <button class="share-btn" onclick="shareArticle('${post.id}')">
+                                シェア
+                            </button>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        // いいね状態を確認
+        function isLiked(postId) {
+            const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
+            return likedPosts.includes(postId);
+        }
+
+        // いいね切り替え
+        function toggleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+            
+            const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
+            const hasLiked = likedPosts.includes(postId);
+            
+            if (hasLiked) {
+                post.likes = Math.max(0, post.likes - 1);
+                const index = likedPosts.indexOf(postId);
+                likedPosts.splice(index, 1);
+            } else {
+                post.likes += 1;
+                likedPosts.push(postId);
+            }
+            
+            localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+            savePosts();
+            renderPosts();
+        }
+
+        // 記事をシェア
+        function shareArticle(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: post.stallName,
+                    text: post.description,
+                    url: window.location.href
+                });
+            } else {
+                // フォールバック: URLをコピー
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('URLをコピーしました');
+                });
+            }
+        }
+
+        // 画像モーダル
+        function openModal(imageSrc) {
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('imageModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        // 日付フォーマット
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 1000 * 60) {
+                return 'たった今';
+            } else if (diff < 1000 * 60 * 60) {
+                return `${Math.floor(diff / (1000 * 60))}分前`;
+            } else if (diff < 1000 * 60 * 60 * 24) {
+                return `${Math.floor(diff / (1000 * 60 * 60))}時間前`;
+            } else {
+                return date.toLocaleDateString('ja-JP', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+        }
+
+        // ESCキーでモーダルを閉じる
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
